@@ -1,10 +1,12 @@
 import { scaleFont } from '@/constants/ScaleFont';
+import { PermissionModal } from '@/constants/utils/permissionModal';
 import { PostAudio } from '@/hooks/api/PostAudio';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import Foundation from '@expo/vector-icons/Foundation';
 import { useNavigation } from '@react-navigation/native';
 import { RecordingPresets, useAudioPlayer, useAudioPlayerStatus, useAudioRecorder } from 'expo-audio';
+import { Directory, File, Paths } from 'expo-file-system';
 import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
@@ -17,7 +19,6 @@ import {
   TouchableHighlight,
   View
 } from 'react-native';
-import ReactNativeBlobUtil from 'react-native-blob-util';
 import { useDispatch } from 'react-redux';
 import { styles } from './style';
 const ScreenWidth = Dimensions.get('window').width;
@@ -33,6 +34,7 @@ export default function Record({ route }: any) {
   const [URL, setURL] = useState<any | null>(null);
   const [loading, setloading] = useState(false);
   const [Uploadmodal, setUploadmodalVisible] = useState(false);
+  const [permissionModalVisible, setPermissionModalVisible] = useState(false);
   const navigation = useNavigation<any>();
   const dispatch = useDispatch();
   const audioRecorderPlayer = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
@@ -55,6 +57,7 @@ export default function Record({ route }: any) {
         // You can now use the microphone
       } else {
         console.log('Microphone permission denied');
+        setPermissionModalVisible(true);
         // Handle the case where permission is denied
       }
     } catch (err) {
@@ -64,8 +67,8 @@ export default function Record({ route }: any) {
 
   const generateFilePath = () => {
     const timestamp = new Date().getTime();
-    const directory = `${ReactNativeBlobUtil.fs.dirs.DocumentDir}`;
-    const path = `${directory}/${timestamp}.mp3`;
+    const targetDirectory = new Directory(Paths.document);
+    const path = `${targetDirectory.uri}/${timestamp}.mp3`;
     setRecordingPath(path);
     console.log(path);
 
@@ -77,30 +80,21 @@ export default function Record({ route }: any) {
 
     try {
       // Check if the image file exists
-      const audioExists = await ReactNativeBlobUtil.fs.exists(URL);
-      if (!audioExists) {
+      const audioExists = await new File(URL).info();
+      if (!audioExists.exists) {
         Alert.alert('Failed to get audio', 'Please record again');
         console.error('audio file does not exist:', URL);
         return;
       }
-      await ReactNativeBlobUtil.fs.cp(URL, recordingPath);
-
-      await ReactNativeBlobUtil.MediaCollection.copyToMediaStore(
-        {
-          name: 'filename.mp3',
-          parentFolder: '',
-          mimeType: 'audio/mpeg',
-        },
-        'Audio',
-        'file://' + recordingPath,
-      );
-
-      console.log('Normalized Path:', recordingPath);
+      const sourceFile = new File(URL);
+      const targetFile = new File(recordingPath);
+      await sourceFile.copy(targetFile);
+      console.log('Normalized Path:', targetFile.uri);
 
       // Create FormData object
       const formData: any = new FormData();
       formData.append('audio', {
-        uri: `file://${normalizedPath}`,
+        uri: `file://${targetFile.uri}`,
         name: 'audio.mp3', // You can adjust the filename as needed
         type: 'audio/mpeg', // Adjust the MIME type if needed
       });
@@ -120,13 +114,15 @@ export default function Record({ route }: any) {
   const onStartRecord = async () => {
     await generateFilePath();
     try {
+      await requestMicrophonePermission();
+
       await audioRecorderPlayer.prepareToRecordAsync();
       await audioRecorderPlayer.record();
       setIsRecording(true);
       setIsRecordingStop(false);
     } catch (error) {
       console.log('Error starting recording:', error);
-      Alert.alert('Failed to start recording.', 'Please try again!');
+
     }
   };
 
@@ -349,6 +345,7 @@ export default function Record({ route }: any) {
           </View>
         </Modal>
       </View>
+      <PermissionModal visible={permissionModalVisible} onClose={() => setPermissionModalVisible(false)} />
     </View>
   );
 }

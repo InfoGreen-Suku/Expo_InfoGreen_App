@@ -26,13 +26,13 @@ import { useSelector } from 'react-redux';
 // import ReceiveSharingIntent from 'react-native-receive-sharing-intent';
 import { scaleFont } from '@/constants/ScaleFont';
 // import { startReminderService } from '@/hooks/BackgroundReminder';
-import { CameraType, CameraView, useCameraPermissions } from 'expo-camera';
+import { CameraType, CameraView } from 'expo-camera';
 import { Directory, File, Paths } from 'expo-file-system';
 
 import { styles } from './style';
 
+import { PermissionModal } from '@/constants/utils/permissionModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import NetInfo from '@react-native-community/netinfo';
 import * as Application from 'expo-application';
 import { useShareIntent } from 'expo-share-intent';
 
@@ -57,7 +57,6 @@ export default function Webview() {
   const [DownloadmodalVisible, setDownloadModalVisible] = useState(false);
   const [PrintmodalVisible, setPrintModalVisible] = useState(false);
   const [AndroidID, setAndroidID] = useState('');
-  const [permission, requestPermission] = useCameraPermissions();
   const { hasShareIntent, shareIntent, resetShareIntent, error } = useShareIntent();
   //  whatsapp message
   const [messagesSent, setMessagesSent] = useState<any[]>([]);
@@ -76,6 +75,7 @@ export default function Webview() {
   const [scanned, setScanned] = useState(false);
   const canGoBackRef = useRef(false);
   const lastBackPressRef = useRef(0);
+  const [permissionModalVisible, setPermissionModalVisible] = useState(false);
   // Function to check network status if network is not detected it navigate to network page
 
   // const callHtmlFunction = () => {
@@ -134,11 +134,11 @@ export default function Webview() {
     }
   }, [hasShareIntent, shareIntent]);
 
-  NetInfo.fetch().then(state => {
-    console.log("Connection type:", state.type);
-    console.log("Is connected:", state.isConnected);
-    console.log("Details:", state.details); // May include ssid, strength, etc.
-  });
+  // NetInfo.fetch().then(state => {
+  //   console.log("Connection type:", state.type);
+  //   console.log("Is connected:", state.isConnected);
+  //   console.log("Details:", state.details); // May include ssid, strength, etc.
+  // });
 
   useEffect(() => {
     if (isCameraOpen) {
@@ -153,120 +153,8 @@ export default function Webview() {
     }
   }, [messages]);
 
-  // useEffect(() => {
-  //   ReceiveSharingIntent.getReceivedFiles(
-  //     (files: any) => {
-  //       console.log("files");
-  //       // files returns as JSON Array example
-  //       //[{ filePath: null, text: null, weblink: null, mimeType: null, contentUri: null, fileName: null, extension: null }]
-  //       if (files.length > 1) {
-  //         // If there are multiple file paths, log each one
-  //         files.forEach((item: any) => {
-  //           const filePath = item.filePath;
-  //           const fileExtension = filePath
-  //             ? filePath.substring(filePath.lastIndexOf('.') + 1).toLowerCase()
-  //             : null;
-
-  //           if (filePath) {
-  //             console.log(fileExtension);
-
-  //             if (fileExtension === 'pdf') {
-  //               console.log(`PDF File: ${filePath}`);
-  //               navigation.navigate('Sharedfile', {filepath: filePath});
-  //             } else if (fileExtension === 'jpg' || fileExtension === 'jpeg') {
-  //               console.log(`JPG File: ${filePath}`);
-  //               navigation.navigate('Sharedfile', {filepath: filePath});
-  //             } else if (fileExtension === 'mp4') {
-  //               console.log(`MP4 File: ${filePath}`);
-  //               navigation.navigate('Sharedfile', {filepath: filePath});
-  //             } else if (fileExtension === 'mp3') {
-  //               console.log(`MP3 File: ${filePath}`);
-  //               navigation.navigate('Sharedfile', {filepath: filePath});
-  //             } else {
-  //               console.log(`Unknown File Type: ${filePath}`);
-  //               navigation.navigate('Sharedfile', {filepath: filePath});
-  //             }
-  //           } else if (item.weblink) {
-  //             if (
-  //               item.weblink.startsWith('http') ||
-  //               item.weblink.startsWith('https')
-  //             ) {
-  //               console.log(`URL File: ${item.weblink}`);
-  //               navigation.navigate('Sharedfile', {filepath: item.weblink});
-  //             } else {
-  //               console.log(`Unknown Web Link: ${item.weblink}`);
-  //               navigation.navigate('Sharedfile', {filepath: item.weblink});
-  //             }
-  //           }
-  //         });
-  //       } else if (files.length === 1) {
-  //         // If there is only one file path, log it
-  //         const filePath = files[0].filePath;
-  //         const fileExtension = filePath
-  //           ? filePath.substring(filePath.lastIndexOf('.') + 1).toLowerCase()
-  //           : null;
-
-  //         if (filePath) {
-  //           if (fileExtension === 'pdf') {
-  //             console.log(`PDF File: ${filePath}`);
-  //             navigation.navigate('Sharedfile', {filepath: filePath});
-  //           } else if (fileExtension === 'jpg' || fileExtension === 'jpeg') {
-  //             console.log(`JPG File: ${filePath}`);
-  //             navigation.navigate('Sharedfile', {filepath: filePath});
-  //           } else if (fileExtension === 'mp4') {
-  //             console.log(`MP4 File: ${filePath}`);
-  //             navigation.navigate('Sharedfile', {filepath: filePath});
-  //           } else if (fileExtension === 'mp3') {
-  //             console.log(`MP3 File: ${filePath}`);
-  //             navigation.navigate('Sharedfile', {filepath: filePath});
-  //           } else {
-  //             console.log(`Unknown File Type: ${filePath}`);
-  //             navigation.navigate('Sharedfile', {filepath: filePath});
-  //           }
-  //         } else if (files[0].weblink) {
-  //           if (
-  //             files[0].weblink.startsWith('http') ||
-  //             files[0].weblink.startsWith('https')
-  //           ) {
-  //             console.log(`URL File: ${files[0].weblink}`);
-  //             navigation.navigate('Sharedfile', {filepath: files[0].weblink});
-  //           } else {
-  //             console.log(`Unknown Web Link: ${files[0].weblink}`);
-  //             navigation.navigate('Sharedfile', {filepath: files[0].weblink});
-  //           }
-  //         }
-  //       }
-  //       console.log(files);
-  //     },
-  //     (error: any) => {
-  //       console.log(error);
-  //     },
-  //     'com.igcloudbook.app'
-  //   );
-
-  // }, []);
-
-  async function checkPermission() {
-    try {
-      const isAndroid10OrAbove = Platform.OS === 'android' && Number(Platform.Version) >= 29;
-
-      const granted = await PermissionsAndroid.check(
-        isAndroid10OrAbove
-          ? PermissionsAndroid.PERMISSIONS.ACCESS_MEDIA_LOCATION
-          : PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE
-      );
-
-
-      if (!granted) {
-
-        navigation.navigate('PermissionScreen');
-
-      }
-    } catch (error) {
-      console.log('Error checking permission:', error);
-
-    }
-  };
+  
+ 
 
   const checkAndRequestReview = async () => {
     console.log(appOpenCount);
@@ -297,17 +185,23 @@ export default function Webview() {
     setSubscriptionID(id);
   };
 
+  const checkPermissions = async () => {
+    const granted = await PermissionsAndroid.check(
+      PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
+    );
+    if (!granted) {
+      navigation.navigate('PermissionScreen');
+    }
+  };
+
   useEffect(() => {
-    //  Checking the network status function
-    checkPermission();
-    // initializeEventListeners();
     // getting androidID
     const androidId = Application.getAndroidId();
     setAndroidID(androidId);
     const appVersion = Application.nativeBuildVersion;
     setAppVersion(appVersion);
     getId();
-
+    checkPermissions();
     // startReminderService();
 
     // Handle app state changes for review
@@ -715,16 +609,12 @@ export default function Webview() {
     if (message) {
       const [action, index, index1, index2] = message.split('&SPLIT&');
       if (action === 'location') {
-        setModalVisible(true);
         setLocation_Id(index);
         console.log('loction');
-        requestLocationPermission()
+        getLocation()
       }
       if (action === 'barcode') {
-        if (!permission) {
-          requestPermission();
-        }
-        setIsCameraOpen(true);
+        requestCameraPermission();
         setbardcode_id(index);
       }
       if (action === 'pdf') {
@@ -839,36 +729,23 @@ export default function Webview() {
     }
   };
 
-  // getting user location for tracking the user current locaton
-  const requestLocationPermission = async () => {
-    try {
-      //  asking permission for access the user location for getting current location f user
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-        {
-          title: 'Location Permission',
-          message: 'This app needs access to your location.',
-          buttonNeutral: 'Ask Me Later',
-          buttonNegative: 'Cancel',
-          buttonPositive: 'OK',
-        },
-      );
-      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        // Location permission granted, proceed with obtaining location
-        getLocation();
-      } else {
-        // Location permission denied, provide guidance to the user
-        Alert.alert(
-          'Permission Denied',
-          'Location permission denied. Please enable location access in your device settings to use this feature.',
-          [
-            { text: 'OK', onPress: () => { } },
-            { text: 'Open Settings', onPress: () => Linking.openSettings() }, // Direct user to settings
-          ],
-        );
-      }
-    } catch (err) {
-      console.warn(err);
+  const requestCameraPermission = async () => {
+    const granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.CAMERA,
+      {
+        title: 'Camera Permission',
+        message: 'This app needs access to your camera.',
+        buttonNeutral: 'Ask Me Later',
+        buttonNegative: 'Cancel',
+        buttonPositive: 'OK',
+      },
+    );
+    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+      setIsCameraOpen(true);
+      return true;
+    } else {
+      setPermissionModalVisible(true);
+      return false;
     }
   };
 
@@ -896,6 +773,7 @@ export default function Webview() {
           console.log('Location:', location.coords.latitude, location.coords.longitude);
         } else {
           setModalVisible(false); // Stop loading
+          setPermissionModalVisible(true);
         }
       } else {
         const location = await Location.getCurrentPositionAsync({
@@ -1037,7 +915,9 @@ export default function Webview() {
       )}
 
 
-
+      {permissionModalVisible && (
+        <PermissionModal visible={permissionModalVisible} onClose={() => {setPermissionModalVisible(false);Linking.openSettings()}} />
+      )}
     </>
   );
 }

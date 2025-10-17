@@ -15,39 +15,44 @@ export default function PermissionScreen() {
 
 async function checkPermission() {
   const isAndroid10OrAbove = Platform.OS === 'android' && Number(Platform.Version) >= 29; // Android 10 (API level 29) or above
-  const permissionsToRequest = isAndroid10OrAbove 
-    ? [PermissionsAndroid.PERMISSIONS.ACCESS_MEDIA_LOCATION,
-      PermissionsAndroid.PERMISSIONS.CALL_PHONE,
-      PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
-      PermissionsAndroid.PERMISSIONS.CAMERA,
-    ]
-    : [
-      PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-      PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
-      PermissionsAndroid.PERMISSIONS.CALL_PHONE,
-      PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
-      PermissionsAndroid.PERMISSIONS.CAMERA,
-    ];
+  // const permissionsToRequest = isAndroid10OrAbove 
+  //   ? [PermissionsAndroid.PERMISSIONS.ACCESS_MEDIA_LOCATION,
+  //     PermissionsAndroid.PERMISSIONS.CALL_PHONE,
+  //     PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
+  //     PermissionsAndroid.PERMISSIONS.CAMERA,
+  //   ]
+  //   : [
+  //     PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+  //     PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+  //     PermissionsAndroid.PERMISSIONS.CALL_PHONE,
+  //     PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
+  //     PermissionsAndroid.PERMISSIONS.CAMERA,
+  //   ];
 
   try {
-    const results = await PermissionsAndroid.requestMultiple(permissionsToRequest);
-    const notification = await OneSignal.Notifications.requestPermission(true);
+    // const results = await PermissionsAndroid.requestMultiple(permissionsToRequest);
+    // const notification = await OneSignal.Notifications.requestPermission(true);
     
-    const allGranted = Object.values(results).every(
-      result => result === PermissionsAndroid.RESULTS.GRANTED
-    ) || notification;
+    // const allGranted = Object.values(results).every(
+    //   result => result === PermissionsAndroid.RESULTS.GRANTED
+    // ) || notification;
+    const result = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
+    );
 
-    if (!allGranted) {
-      Alert.alert(
-        'Permission Required',
-        'Without permission you cannot access the app.',
-        [
-          {
-            text: 'Open Settings',
-            onPress: () => Linking.openSettings()
-          },
-        ],
-      );
+    const allGranted = result === PermissionsAndroid.RESULTS.GRANTED;
+
+      if (!allGranted) {
+        Alert.alert(
+          'Permission Required',
+          'Without permission you cannot access the app.',
+          [
+            {
+              text: 'Open Settings',
+              onPress: () => Linking.openSettings()
+            },
+          ],
+        );
     } else {
       navigation.navigate('Webview');
     }

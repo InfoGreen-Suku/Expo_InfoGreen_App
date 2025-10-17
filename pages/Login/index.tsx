@@ -9,10 +9,11 @@ import NetInfo from '@react-native-community/netinfo';
 import { useNavigation } from '@react-navigation/native';
 import * as Application from 'expo-application';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, BackHandler, Dimensions, Image, ImageBackground, KeyboardAvoidingView, Modal, Platform, ScrollView, Text, TextInput, TouchableHighlight, View } from 'react-native';
+import { ActivityIndicator, Alert, BackHandler, Dimensions, Image, ImageBackground, KeyboardAvoidingView, Modal, PermissionsAndroid, Platform, ScrollView, Text, TextInput, TouchableHighlight, View } from 'react-native';
 import { OneSignal } from 'react-native-onesignal';
 
-import { CameraType, CameraView, useCameraPermissions } from 'expo-camera';
+import { PermissionModal } from '@/constants/utils/permissionModal';
+import { CameraType, CameraView } from 'expo-camera';
 import { useDispatch, useSelector } from 'react-redux';
 import { styles } from './style';
 const ScreenHeight = Dimensions.get('window').height;
@@ -37,17 +38,13 @@ export default function Login() {
   const isLoading = useSelector((state: any) => state.user.loading); // handle notification
   const [visible, setisvisible] = useState(false);
   const [facing, setFacing] = useState<CameraType>('back');
-  const [permission, requestPermission] = useCameraPermissions();
   const [scanned, setScanned] = useState(false);
-
+  const [permissionModalVisible, setPermissionModalVisible] = useState(false);
   useEffect(() => {
     const androidId = Application.getAndroidId();
     setAndroidID(androidId);
 
-    if (permission?.status !== 'granted') {
-      requestPermission();
-    }
-  }, [permission]);
+  }, []);
 
   useEffect(() => {
     if (isCameraOpen) {
@@ -65,6 +62,29 @@ export default function Login() {
     });
   };
 
+  const checkPermissions = async () => {
+    const granted = await PermissionsAndroid.check(
+      PermissionsAndroid.PERMISSIONS.CAMERA,
+    );
+    if (!granted) {
+      setIsCameraOpen(false);
+      PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.CAMERA,
+      ).then(granted => {
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          setIsCameraOpen(true);
+        }
+        else {
+          console.log("Permission denied");
+          setIsCameraOpen(false);
+          setPermissionModalVisible(true);
+        }
+      });
+    }
+    else {
+      setIsCameraOpen(true);
+    }
+  };
   // const method = 'aes-256-cbc';
 
   // // Generate a random IV (Initialization Vector)
@@ -201,7 +221,7 @@ export default function Login() {
         behavior="padding"
         style={{ flex: 1 }}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 50}>
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginTop: ScreenHeight*0.1 }}>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginTop: ScreenHeight * 0.1 }}>
           <Image
             style={{ height: scaleFont(85), width: '70%', marginBottom: scaleFont(20) }}
             source={require('../../assets/images/Logo1.png')}
@@ -325,7 +345,7 @@ export default function Login() {
                   borderRadius: 10,
                   width: 200,
                 }}
-                onPress={() => setIsCameraOpen(true)}
+                onPress={checkPermissions}
                 underlayColor={'#009333'}>
                 <Text
                   style={{
@@ -379,8 +399,8 @@ export default function Login() {
                   }
                 }}
               />
-               {/* Scanner Frame Overlay */}
-               <View style={styles.scannerFrame}>
+              {/* Scanner Frame Overlay */}
+              <View style={styles.scannerFrame}>
                 <View />
                 <View />
                 <View />
@@ -405,6 +425,7 @@ export default function Login() {
             </View>
           </View>
         </Modal>
+        <PermissionModal visible={permissionModalVisible} onClose={() => setPermissionModalVisible(false)} />
       </View>
 
     </ImageBackground>
