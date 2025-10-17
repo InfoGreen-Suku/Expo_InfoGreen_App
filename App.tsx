@@ -37,7 +37,7 @@ export default function RootLayout() {
     await ensureNotificationPermission();
   }
   useEffect(() => {
-    requestPermissions();
+    // requestPermissions();
   }, []);
   return (
     <ShareIntentProvider>

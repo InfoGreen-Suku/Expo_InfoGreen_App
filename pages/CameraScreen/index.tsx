@@ -7,6 +7,7 @@ import {
   Alert,
   BackHandler,
   Image,
+  Linking,
   Modal,
   PermissionsAndroid,
   Platform,
@@ -15,7 +16,6 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
-import ReactNativeBlobUtil from 'react-native-blob-util';
 import RNPhotoManipulator from 'react-native-photo-manipulator';
 
 import { useNavigation } from '@react-navigation/native';
@@ -23,8 +23,10 @@ import * as ImageManipulator from 'expo-image-manipulator';
 import { useDispatch } from 'react-redux';
 
 import { scaleFont } from '@/constants/ScaleFont';
+import { PermissionModal } from '@/constants/utils/permissionModal';
 import { PostFile } from '@/hooks/api/PostFile';
-import { CameraType, CameraView, useCameraPermissions } from 'expo-camera';
+import { CameraType, CameraView } from 'expo-camera';
+import { Directory, File, Paths } from 'expo-file-system';
 import * as Location from 'expo-location';
 import { styles } from './style';
 
@@ -35,7 +37,6 @@ const CameraScreen = ({ route }: any) => {
   const [showCamera, setShowCamera] = useState(true);
   const dispatch = useDispatch();
   const [facing, setFacing] = useState<CameraType>('back');
-  const [permission, requestPermission] = useCameraPermissions();
   const [dateTime, setDateTime] = useState('');
   const [location, setLocation] = useState<any | null>(null);
   const [isFetchingLocation, setIsFetchingLocation] = useState(false); // Add loading state
@@ -43,7 +44,7 @@ const CameraScreen = ({ route }: any) => {
   const navigation = useNavigation<any>();
   const [modalVisible, setModalVisible] = useState(false);
   const [errormodalVisible, seterrorModalVisible] = useState(false);
-
+  const [permissionModalVisible, setPermissionModalVisible] = useState(false);
   const switchCamera = () => {
     setFacing(prevType => (prevType === 'back' ? 'front' : 'back'));
   };
@@ -62,12 +63,9 @@ const CameraScreen = ({ route }: any) => {
   }, []);
   // Get current date and time
   useEffect(() => {
-    if (permission?.status !== 'granted') {
-      requestPermission();
-    }
     const date = new Date();
     setDateTime(date.toLocaleString());
-    getLocation();
+    RequestPermission();
   }, []);
 
   // asking permission to user for location tracking
@@ -107,7 +105,22 @@ const CameraScreen = ({ route }: any) => {
     }
   };
 
+  const RequestPermission = async () => {
+    const granted = await PermissionsAndroid.requestMultiple(
+      [PermissionsAndroid.PERMISSIONS.CAMERA, PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION],
+    );
+    if (granted['android.permission.CAMERA'] === PermissionsAndroid.RESULTS.GRANTED && granted['android.permission.ACCESS_FINE_LOCATION'] === PermissionsAndroid.RESULTS.GRANTED) {
+      return true;
+    } else {
+      setPermissionModalVisible(true);
+      return false;
+    }
+  };
   const takePicture = async () => {
+    const permissionGranted = await RequestPermission();
+    if (!permissionGranted) {
+      return;
+    }
     if (camera.current) {
       try {
         const photo = await camera.current.takePictureAsync({
@@ -158,34 +171,24 @@ const CameraScreen = ({ route }: any) => {
 
   const saveImageWithWatermark = async () => {
     try {
-      // Use ReactNativeBlobUtil's fs.dirs to get the document directory
-      const directory = ReactNativeBlobUtil.fs.dirs.DocumentDir;
+
       const timestamp = new Date().getTime();
       const filename = `captured_image_${timestamp}.jpg`;
-      const destPath = `${directory}/${filename}`;
+      const targetDirectory = new Directory(Paths.document);
+      const destPath = `${targetDirectory.uri}/${filename}`;
       const imageuri = `file://${imageUri}`;
-
-      // Check if directory exists using ReactNativeBlobUtil
-      const directoryExists = await ReactNativeBlobUtil.fs.exists(directory);
-
-      if (!directoryExists) {
-        await ReactNativeBlobUtil.fs.mkdir(directory);
+      const targetFile = new File(destPath);
+      const dirInfo = await targetDirectory.info();
+      if (!dirInfo.exists) {
+        await targetDirectory.create({ intermediates: true });
       }
 
       const data: any = await createWatermarkedImage(imageuri);
 
-      // Copy file using ReactNativeBlobUtil
-      await ReactNativeBlobUtil.fs.cp(data, destPath);
 
-      await ReactNativeBlobUtil.MediaCollection.copyToMediaStore(
-        {
-          name: filename,
-          parentFolder: '',
-          mimeType: 'image/jpeg',
-        },
-        'Image',
-        'file://' + destPath,
-      );
+      const sourceFile = new File(data);
+      await sourceFile.copy(targetFile);
+
 
       uploadImage(destPath);
       return destPath;
@@ -246,9 +249,8 @@ const CameraScreen = ({ route }: any) => {
   // upload image to api
   const uploadImage = async (imagePath: any) => {
     try {
-      // Check if the image file exists using ReactNativeBlobUtil
-      const imageExists = await ReactNativeBlobUtil.fs.exists(imagePath);
-      if (!imageExists) {
+      const imageExists = await new File(imagePath).info();
+      if (!imageExists.exists) {
         setModalVisible(false);
         Alert.alert('Failed to capture image', 'Please retake image!');
         console.log('Image file does not exist:', imagePath);
@@ -322,7 +324,7 @@ const CameraScreen = ({ route }: any) => {
                 style={styles.captureInnerButton}
                 onPress={takePicture}
               />
-              <Text style={[styles.buttonText,{top:4}]}>Capture</Text>
+              <Text style={[styles.buttonText, { top: 4 }]}>Capture</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.button} onPress={switchCamera}>
               <MaterialIcons name="cameraswitch" size={30}
@@ -437,6 +439,9 @@ const CameraScreen = ({ route }: any) => {
             </View>
           </View>
         </Modal>
+      )}
+      {permissionModalVisible && (
+        <PermissionModal visible={permissionModalVisible} onClose={() => {setPermissionModalVisible(false);Linking.openSettings()}} />
       )}
     </View>
   );
