@@ -1,3 +1,4 @@
+import ApiLogsScreen from "@/pages/ApiLogsScreen";
 import CameraScreen from "@/pages/CameraScreen";
 import OpenLink from "@/pages/OpenLinkScreen";
 import PDF from "@/pages/PDF";
@@ -47,6 +48,7 @@ export default function MainNavigator() {
       <MainStack.Screen name="Record" component={Record} />
       <MainStack.Screen name="Camera" component={CameraScreen} />
       <MainStack.Screen name="Sharedfile" component={Sharedfile} />
+      <MainStack.Screen name="ApiLogsScreen" component={ApiLogsScreen} />
     </MainStack.Navigator>
     </SafeAreaView>
   )

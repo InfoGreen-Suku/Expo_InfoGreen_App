@@ -1,7 +1,4 @@
-import { View, Text } from 'react-native'
-import React from 'react'
-import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import apiClient from '../logger/apiClient';
 
 export const  PostAudio= async(formData: any,url: any)=> {
     console.log("formData",formData);
@@ -12,7 +9,7 @@ export const  PostAudio= async(formData: any,url: any)=> {
       if (apiAudioUrl==='') {
         apiAudioUrl = 'https://infogreen.synology.me:82/api.php'; // Fallback URL
       }
-        const response = await axios.post(apiAudioUrl, formData, {
+        const response = await apiClient.post(apiAudioUrl, formData, {
             headers: {
               'Content-Type': 'multipart/form-data',
             },

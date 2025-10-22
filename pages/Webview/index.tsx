@@ -653,6 +653,7 @@ export default function Webview() {
       }
       if (action === 'Share_pdf') {
         URLtoShare(index);
+        navigation.navigate('ApiLogsScreen');
       }
       if (action === 'openLink') {
         navigation.navigate('OpenLink', { link: index, name: index1 });
