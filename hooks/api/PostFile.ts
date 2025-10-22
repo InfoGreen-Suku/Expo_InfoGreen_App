@@ -1,7 +1,4 @@
-import { View, Text } from 'react-native'
-import React from 'react'
-import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import apiClient from '../logger/apiClient';
 
 export const  PostFile= async(formData: any,url: any)=> {
     console.log("formdata_img",url);
@@ -13,7 +10,7 @@ export const  PostFile= async(formData: any,url: any)=> {
         // apiImageUrl = 'https://infogreen.synology.me:82/api.php'; 
         apiImageUrl = 'https://rk12.infogreen.in/test.php'; // Fallback URL
       }
-        const response = await axios.post(apiImageUrl, formData, {
+        const response = await apiClient.post(apiImageUrl, formData, {
             headers: {
               'Content-Type': 'multipart/form-data',
             },
