@@ -3,7 +3,7 @@ import * as Location from 'expo-location';
 import * as ExpoPrint from 'expo-print';
 import * as SMS from 'expo-sms';
 import * as StoreReview from 'expo-store-review';
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -33,8 +33,8 @@ import { styles } from './style';
 
 import { PermissionModal } from '@/constants/utils/permissionModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as Application from 'expo-application';
 import { useShareIntent } from 'expo-share-intent';
+import DeviceInfo from 'react-native-device-info';
 
 export default function Webview() {
   const users = useSelector((store: any) => store?.user?.userData);
@@ -153,8 +153,8 @@ export default function Webview() {
     }
   }, [messages]);
 
-  
- 
+
+
 
   const checkAndRequestReview = async () => {
     console.log(appOpenCount);
@@ -186,20 +186,26 @@ export default function Webview() {
   };
 
   const checkPermissions = async () => {
-    const granted = await PermissionsAndroid.check(
-      PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
-    );
-    if (!granted) {
-      navigation.navigate('PermissionScreen');
+    const isAndroid10OrAbove = Platform.OS === 'android' && Number(Platform.Version) > 31;
+
+    if (isAndroid10OrAbove) {
+      const granted = await PermissionsAndroid.check(
+        PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
+      );
+      if (!granted) {
+        navigation.navigate('PermissionScreen');
+      }
     }
+
   };
 
   useEffect(() => {
     // getting androidID
-    const androidId = Application.getAndroidId();
-    setAndroidID(androidId);
-    const appVersion = Application.nativeBuildVersion;
-    setAppVersion(appVersion);
+    DeviceInfo.getAndroidId().then(androidId => {
+      setAndroidID(androidId);
+    });
+    const appversion =DeviceInfo.getBuildNumber()
+    setAppVersion(appversion);
     getId();
     checkPermissions();
     // startReminderService();
@@ -359,7 +365,7 @@ export default function Webview() {
         lastBackPressRef.current = 0; // Reset timer when going back in WebView
         return true;
       }
-      
+
       const now = Date.now();
       if (lastBackPressRef.current && now - lastBackPressRef.current < 2000) {
         console.log('Exiting app');
@@ -819,7 +825,7 @@ export default function Webview() {
       </View>
       <WebView
         userAgent={`${appVersion}/infogreen-c-app/${AndroidID}/${subscriptionID}`}
-        source={{ uri: "https://infogreen.in/test" }}
+        source={{ uri: URL }}
         startInLoadingState
         renderLoading={() => (
           <View style={[styles.container, styles.horizontal]}>
@@ -916,7 +922,7 @@ export default function Webview() {
 
 
       {permissionModalVisible && (
-        <PermissionModal visible={permissionModalVisible} onClose={() => {setPermissionModalVisible(false);Linking.openSettings()}} />
+        <PermissionModal visible={permissionModalVisible} onClose={() => { setPermissionModalVisible(false); Linking.openSettings() }} />
       )}
     </>
   );

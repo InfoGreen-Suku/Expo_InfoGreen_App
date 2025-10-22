@@ -24,9 +24,9 @@ export default function MainNavigator() {
     if (userData ) {
       switch (userData?.authentication) {
         case 'yes':
-          return 'Pin';
+          return userData?.status === 'success' ? 'Pin' : 'PendingScreen';
         case 'no':
-          return userData?.status === 'success' ? 'Webview' : 'Webview';
+          return userData?.status === 'success' ? 'Webview' : 'PendingScreen';
         default:
           return 'PendingScreen';
       }
