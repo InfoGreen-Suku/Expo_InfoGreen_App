@@ -7,13 +7,13 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
 import { useNavigation } from '@react-navigation/native';
-import * as Application from 'expo-application';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, BackHandler, Dimensions, Image, ImageBackground, KeyboardAvoidingView, Modal, PermissionsAndroid, Platform, ScrollView, Text, TextInput, TouchableHighlight, View } from 'react-native';
 import { OneSignal } from 'react-native-onesignal';
 
 import { PermissionModal } from '@/constants/utils/permissionModal';
 import { CameraType, CameraView } from 'expo-camera';
+import DeviceInfo from 'react-native-device-info';
 import { useDispatch, useSelector } from 'react-redux';
 import { styles } from './style';
 const ScreenHeight = Dimensions.get('window').height;
@@ -40,10 +40,9 @@ export default function Login() {
   const [facing, setFacing] = useState<CameraType>('back');
   const [scanned, setScanned] = useState(false);
   const [permissionModalVisible, setPermissionModalVisible] = useState(false);
+  const [deviceInfo, setDeviceInfo] = useState<any>(null);
   useEffect(() => {
-    const androidId = Application.getAndroidId();
-    setAndroidID(androidId);
-
+    getAllDeviceInfo()
   }, []);
 
   useEffect(() => {
@@ -51,6 +50,75 @@ export default function Login() {
       setScanned(false);
     }
   }, [isCameraOpen]);
+
+
+  const getAllDeviceInfo = async () => {
+    try {
+      const [
+        androidApiLevel,
+        androidID,
+        brand,
+        systemName,
+        systemVersion,
+        applicationBuildVersion,
+        operatorName,
+        device,
+        deviceID,
+        deviceName,
+        fontScale,
+        hardware,
+        ipAddress,
+        macAddress,
+        manufacturer,
+        modal,
+        productName,
+        applicationVersion
+      ] = await Promise.all([
+        DeviceInfo.getApiLevel(),
+        DeviceInfo.getAndroidId(),
+        DeviceInfo.getBrand(),
+        DeviceInfo.getSystemName(),
+        DeviceInfo.getSystemVersion(),
+        DeviceInfo.getBuildNumber(),
+        DeviceInfo.getCarrier(),
+        DeviceInfo.getDevice(),
+        DeviceInfo.getDeviceId(),
+        DeviceInfo.getDeviceName(),
+        DeviceInfo.getFontScale(),
+        DeviceInfo.getHardware(),
+        DeviceInfo.getIpAddress(),
+        DeviceInfo.getMacAddress(),
+        DeviceInfo.getManufacturer(),
+        DeviceInfo.getModel(),
+        DeviceInfo.getProduct(),
+        DeviceInfo.getVersion()
+      ]);
+
+      const deviceInfo = {
+        androidApiLevel,
+        androidID,
+        brand,
+        systemName,
+        systemVersion,
+        applicationBuildVersion,
+        operatorName,
+        device,
+        deviceID,
+        deviceName,
+        fontScale,
+        hardware,
+        ipAddress,
+        macAddress,
+        manufacturer,
+        modal,
+        productName,
+        applicationVersion
+      };
+      setDeviceInfo(deviceInfo);
+    } catch (error) {
+      console.error('Error getting device info:', error);
+    }
+  };
 
   const checkNetworkStatus = () => {
     NetInfo.fetch().then(state => {
@@ -114,6 +182,7 @@ export default function Login() {
 
   // Saving the user details and posting it into api
   const saveUserDetails = async () => {
+    
     try {
       // Checking input field
       let isError = false;
@@ -145,7 +214,7 @@ export default function Login() {
           await OneSignal.User.pushSubscription.getIdAsync();
 
         // Storing to local storage
-        const userId = AndroidID;
+        const userId = deviceInfo.androidID;
         console.log(id);
         const userDetails = {
           userId,
@@ -154,6 +223,7 @@ export default function Login() {
           mobileNumber,
           appCode,
           subscriptionId: id,
+          deviceInfo: deviceInfo,
           // ciphertext: ciphertext,
           // key: secretKey,
         };
