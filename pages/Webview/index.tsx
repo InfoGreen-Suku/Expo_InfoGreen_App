@@ -204,7 +204,7 @@ export default function Webview() {
     DeviceInfo.getAndroidId().then(androidId => {
       setAndroidID(androidId);
     });
-    const appversion =DeviceInfo.getBuildNumber()
+    const appversion = DeviceInfo.getBuildNumber()
     setAppVersion(appversion);
     getId();
     checkPermissions();
@@ -653,7 +653,7 @@ export default function Webview() {
       }
       if (action === 'Share_pdf') {
         URLtoShare(index);
-        navigation.navigate('ApiLogsScreen');
+        // navigation.navigate('ApiLogsScreen');
       }
       if (action === 'openLink') {
         navigation.navigate('OpenLink', { link: index, name: index1 });
@@ -834,13 +834,26 @@ export default function Webview() {
           </View>
         )}
         scalesPageToFit={true}
+        javaScriptEnabled={true}
+        domStorageEnabled={true}
+        cacheEnabled={false}
+        incognito={true}
+        pullToRefreshEnabled={false}
         ref={webViewRef}
         onNavigationStateChange={navState => {
           setCanGoBack(navState.canGoBack);
           canGoBackRef.current = navState.canGoBack; // keep latest value
         }}
+        textZoom={100}
         injectedJavaScript={injectScript}
         onMessage={handleWebViewMessage}
+        onError={(e) => {
+          const { description } = e.nativeEvent;
+          console.warn('WebView Error:', description);
+          Alert.alert('Page Load Error', description, [
+            { text: 'Retry', onPress: () => webViewRef.current?.reload() },
+          ]);
+        }}
       />
       <View >
         <Modal

@@ -114,7 +114,7 @@ export default function WelcomeScreen() {
 
       {/* Header Logo */}
       <Image
-        style={{ height: scaleFont(85), width: '70%', alignSelf: 'center', marginTop: scaleFont(50) }}
+        style={{ height: '11%', width: '70%', alignSelf: 'center', marginTop: scaleFont(50) }}
         source={require('../../assets/images/Logo1.png')}
       />
 

@@ -26,8 +26,10 @@ import { ensureExactAlarmPermission, ensureNotificationPermission, ensureOverlay
 // across devices; use scale utilities for predictable sizing
 if ((Text as any).defaultProps == null) (Text as any).defaultProps = {};
 (Text as any).defaultProps.allowFontScaling = false;
+(Text as any).defaultProps.maxFontSizeMultiplier = 1;
 if ((TextInput as any).defaultProps == null) (TextInput as any).defaultProps = {};
 (TextInput as any).defaultProps.allowFontScaling = false;
+(TextInput as any).defaultProps.maxFontSizeMultiplier = 1;
 
 export default function RootLayout() {
 
@@ -37,7 +39,7 @@ export default function RootLayout() {
     await ensureNotificationPermission();
   }
   useEffect(() => {
-    // requestPermissions();
+    requestPermissions();
   }, []);
   return (
     <ShareIntentProvider>
