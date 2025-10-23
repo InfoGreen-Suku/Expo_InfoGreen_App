@@ -6,11 +6,11 @@ export const styles = StyleSheet.create({
     background: {
       flex: 1,
       resizeMode: 'contain',
-      justifyContent: 'center',
+      justifyContent: 'flex-start',
     },
     container: {
       flex: 1,
-      justifyContent: 'center',
+      justifyContent: 'flex-start',
       alignItems: 'center',
     },
     input: {

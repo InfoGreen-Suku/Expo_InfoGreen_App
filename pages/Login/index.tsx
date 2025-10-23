@@ -182,7 +182,7 @@ export default function Login() {
 
   // Saving the user details and posting it into api
   const saveUserDetails = async () => {
-    
+
     try {
       // Checking input field
       let isError = false;
@@ -286,19 +286,19 @@ export default function Login() {
     <ImageBackground
       source={require('../../assets/images/background.png')}
       style={styles.background}>
-
+      <View style={{ alignItems: 'center', marginTop: scaleFont(50) }}>
+        <Image
+          style={{ height: scaleFont(120), width: '70%', resizeMode: 'contain' }}
+          source={require('../../assets/images/Logo1.png')}
+        />
+      </View>
       <KeyboardAvoidingView
         behavior="padding"
         style={{ flex: 1 }}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 50}>
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginTop: ScreenHeight * 0.1 }}>
-          <Image
-            style={{ height: scaleFont(85), width: '70%', marginBottom: scaleFont(20) }}
-            source={require('../../assets/images/Logo1.png')}
-          />
-        </View>
+
         <ScrollView
-          contentContainerStyle={{ paddingTop: scaleFont(50), paddingHorizontal: scaleFont(20) }} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
+          contentContainerStyle={{marginTop: scaleFont(40), paddingHorizontal: scaleFont(20) }} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
           <View style={styles.container}>
 
             <Text style={styles.header}>ENTER YOUR DETAILS</Text>

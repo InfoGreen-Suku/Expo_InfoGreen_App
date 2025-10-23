@@ -1,4 +1,5 @@
 import { postUserDetails } from '@/hooks/api/postUserDetails';
+import { getLogs } from '@/hooks/logger/apiLogger';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from "@react-native-community/netinfo";
 import { useNavigation } from '@react-navigation/native';
@@ -49,15 +50,20 @@ export default function Splashscreen() {
   
   //  cross check the user details for navigate to webview page if user details is null it navigate to welcome page
   const checkUserDetails = async () => {
+    const logs=await getLogs()
     try {
       const savedUserDetails = await AsyncStorage.getItem('userDetails');
       if (!savedUserDetails) {
         navigation.navigate('WelcomeScreen');
       } else {
         const userDetails = JSON.parse(savedUserDetails);
-        console.log(userDetails);
-        if(userDetails!==null ||userDetails!==undefined){
-          const details=await postUserDetails(userDetails)
+        const UserDetails={
+          ...userDetails,
+          Log: logs
+        }
+        console.log(UserDetails);
+        if(UserDetails!==null ||UserDetails!==undefined){
+          const details=await postUserDetails(UserDetails)
           dispatch({ type: 'POST_USER_SUCCESS', payload: details });
           // console.log("details",details);
           // Check if biometric authentication is supported once it supported whenever the user open the app it asking finger print authentication

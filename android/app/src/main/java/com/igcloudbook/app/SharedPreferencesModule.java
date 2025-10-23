@@ -43,6 +43,16 @@ public class SharedPreferencesModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
+    public void getInt(String key, Double defaultValue, Promise promise) {
+        try {
+            int value = sharedPreferences.getInt(key, defaultValue.intValue());
+            promise.resolve((double) value);
+        } catch (Exception e) {
+            promise.reject("ERROR", e.getMessage());
+        }
+    }
+
+    @ReactMethod
     public void removeItem(String key, Promise promise) {
         try {
             SharedPreferences.Editor editor = sharedPreferences.edit();
