@@ -33,6 +33,8 @@ import { styles } from './style';
 
 import { PermissionModal } from '@/constants/utils/permissionModal';
 import { postUserDetails } from '@/hooks/api/postUserDetails';
+import { startReminderService } from '@/hooks/BackgroundReminder';
+import { ensureExactAlarmPermission, ensureOverlayPermission } from '@/hooks/BackgroundReminder/ReminderModule';
 import { getLogs } from '@/hooks/logger/apiLogger';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useShareIntent } from 'expo-share-intent';
@@ -51,6 +53,7 @@ export default function Webview() {
   const [state, setstate] = useState(false);
   const [location, setLocation] = useState<any | null>(null);
   const userStatus = useSelector((store: any) => store?.user?.userData?.status);
+  const isReminderServiceEnabled = useSelector((store: any) => store?.user?.isReminderServiceEnabled);
   const navigation = useNavigation<any>();
   const [Location_Id, setLocation_Id] = useState(null);
   const [bardcode_id, setbardcode_id] = useState(null);
@@ -163,7 +166,7 @@ export default function Webview() {
       postUserDetailsData();
     }
   }, []);
-  
+
   const postUserDetailsData = async () => {
     const logs = await getLogs()
     try {
@@ -229,7 +232,18 @@ export default function Webview() {
       }
     }
 
+    if (isReminderServiceEnabled) {
+      await ensureOverlayPermission();
+      await ensureExactAlarmPermission();
+      // await ensureBatteryOptimizationExemption();
+    }
+
   };
+  useEffect(() => {
+    if (isReminderServiceEnabled) {
+      startReminderService();
+    }
+  }, [isReminderServiceEnabled]);
 
   useEffect(() => {
     // getting androidID
@@ -240,7 +254,6 @@ export default function Webview() {
     setAppVersion(appversion);
     getId();
     checkPermissions();
-    // startReminderService();
 
     // Handle app state changes for review
 

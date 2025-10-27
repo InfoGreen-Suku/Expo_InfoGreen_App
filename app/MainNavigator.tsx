@@ -11,7 +11,6 @@ import Sharedfile from "@/pages/SharedFileScreen";
 import VerificationScreen from "@/pages/VerificationScreen";
 import Webview from "@/pages/Webview";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { useSelector } from "react-redux";
 
 
@@ -35,7 +34,6 @@ export default function MainNavigator() {
   };
   const initRoute = initialRouteName();
   return (
-    <SafeAreaView style={{ flex: 1}}>
     <MainStack.Navigator screenOptions={{ headerShown: false }} initialRouteName={initRoute}>
       <MainStack.Screen name="PendingScreen" component={PendingScreen} />
       <MainStack.Screen name="PermissionScreen" component={PermissionScreen} />
@@ -50,7 +48,6 @@ export default function MainNavigator() {
       <MainStack.Screen name="Sharedfile" component={Sharedfile} />
       <MainStack.Screen name="ApiLogsScreen" component={ApiLogsScreen} />
     </MainStack.Navigator>
-    </SafeAreaView>
   )
 }
 

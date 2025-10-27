@@ -10,14 +10,13 @@ import {
 import { ShareIntentProvider } from "expo-share-intent";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useRef } from "react";
-import { Text, TextInput, useColorScheme } from "react-native";
+import { Text, TextInput, useColorScheme, View } from "react-native";
 import { LogLevel, OneSignal } from "react-native-onesignal";
 import "react-native-reanimated";
 import { SafeAreaProvider, useSafeAreaInsets } from "react-native-safe-area-context";
 import { Provider, useSelector } from "react-redux";
 import AuthStackNavigator from "./app/AuthStackNavigator";
 import MainNavigator from "./app/MainNavigator";
-import { ensureExactAlarmPermission, ensureNotificationPermission, ensureOverlayPermission } from "./hooks/BackgroundReminder/ReminderModule";
 
 // You can remove this if you don't need to wait for any assets
 // SplashScreen.preventAutoHideAsync();
@@ -33,14 +32,14 @@ if ((TextInput as any).defaultProps == null) (TextInput as any).defaultProps = {
 
 export default function RootLayout() {
 
-  const requestPermissions = async () => {
-    await ensureOverlayPermission();
-    await ensureExactAlarmPermission();
-    await ensureNotificationPermission();
-  }
-  useEffect(() => {
-    requestPermissions();
-  }, []);
+  // const requestPermissions = async () => {
+  //   await ensureOverlayPermission();
+  //   await ensureExactAlarmPermission();
+  //   await ensureNotificationPermission();
+  // }
+  // useEffect(() => {
+  //   requestPermissions();
+  // }, []);
   return (
     <ShareIntentProvider>
       <Provider store={store}>
@@ -107,11 +106,14 @@ function Root() {
   };
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <StatusBar style="auto" />
-      <NavigationContainer>
-        {userData === null ? <AuthStackNavigator /> : <MainNavigator />}
-      </NavigationContainer>
-
+      <View style={{ flex: 1 }}>
+        <StatusBar style="light" />
+        <View style={{ height: insets.top, backgroundColor: '#009333' }} />
+        <NavigationContainer>
+          {userData === null ? <AuthStackNavigator /> : <MainNavigator />}
+        </NavigationContainer>
+        <View style={{ height: insets.bottom }} />
+      </View>
     </ThemeProvider>
   )
 }
