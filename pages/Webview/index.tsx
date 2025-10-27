@@ -22,7 +22,7 @@ import Share from 'react-native-share';
 
 import { Linking } from 'react-native';
 import { WebView } from 'react-native-webview';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 // import ReceiveSharingIntent from 'react-native-receive-sharing-intent';
 import { scaleFont } from '@/constants/ScaleFont';
 // import { startReminderService } from '@/hooks/BackgroundReminder';
@@ -32,6 +32,8 @@ import { Directory, File, Paths } from 'expo-file-system';
 import { styles } from './style';
 
 import { PermissionModal } from '@/constants/utils/permissionModal';
+import { postUserDetails } from '@/hooks/api/postUserDetails';
+import { getLogs } from '@/hooks/logger/apiLogger';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useShareIntent } from 'expo-share-intent';
 import DeviceInfo from 'react-native-device-info';
@@ -76,6 +78,8 @@ export default function Webview() {
   const canGoBackRef = useRef(false);
   const lastBackPressRef = useRef(0);
   const [permissionModalVisible, setPermissionModalVisible] = useState(false);
+  const hasPostedRef = useRef(false);
+  const dispatch = useDispatch();
   // Function to check network status if network is not detected it navigate to network page
 
   // const callHtmlFunction = () => {
@@ -153,7 +157,35 @@ export default function Webview() {
     }
   }, [messages]);
 
-
+  useEffect(() => {
+    if (!hasPostedRef.current) {
+      hasPostedRef.current = true;
+      postUserDetailsData();
+    }
+  }, []);
+  
+  const postUserDetailsData = async () => {
+    const logs = await getLogs()
+    try {
+      const userdetails = await AsyncStorage.getItem('userDetails');
+      if (userdetails) {
+        const userDetails = JSON.parse(userdetails);
+        const UserDetails = {
+          ...userDetails,
+          Log: logs
+        }
+        if (UserDetails !== null || UserDetails !== undefined) {
+          const details = await postUserDetails(UserDetails)
+          dispatch({ type: 'POST_USER_SUCCESS', payload: details });
+          // console.log("details",details);
+          // Check if biometric authentication is supported once it supported whenever the user open the app it asking finger print authentication
+        }
+      }
+    }
+    catch (error) {
+      console.log("error", error);
+    }
+  }
 
 
   const checkAndRequestReview = async () => {
