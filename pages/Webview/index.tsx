@@ -35,14 +35,13 @@ import { PermissionModal } from '@/constants/utils/permissionModal';
 import { postUserDetails } from '@/hooks/api/postUserDetails';
 import { startReminderService } from '@/hooks/BackgroundReminder';
 import { ensureExactAlarmPermission, ensureOverlayPermission } from '@/hooks/BackgroundReminder/ReminderModule';
-import { getLogs } from '@/hooks/logger/apiLogger';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useShareIntent } from 'expo-share-intent';
 import DeviceInfo from 'react-native-device-info';
 
 export default function Webview() {
   const users = useSelector((store: any) => store?.user?.userData);
-  const URL = users?.url ? users.url : "https://infogreen.in/test";
+  const URL = users?.url
   const SharedFile_URL = useSelector((store: any) => store?.user?.SharedFile_URL);
   const Image_URL = useSelector((store: any) => store?.user?.Image_URL);
   const Audio_URL = useSelector((store: any) => store?.user?.Audio_URL);
@@ -168,17 +167,13 @@ export default function Webview() {
   }, []);
 
   const postUserDetailsData = async () => {
-    const logs = await getLogs()
     try {
       const userdetails = await AsyncStorage.getItem('userDetails');
       if (userdetails) {
         const userDetails = JSON.parse(userdetails);
-        const UserDetails = {
-          ...userDetails,
-          Log: logs
-        }
-        if (UserDetails !== null || UserDetails !== undefined) {
-          const details = await postUserDetails(UserDetails)
+      
+        if (userDetails !== null || userDetails !== undefined) {
+          const details = await postUserDetails(userDetails)
           dispatch({ type: 'POST_USER_SUCCESS', payload: details });
           // console.log("details",details);
           // Check if biometric authentication is supported once it supported whenever the user open the app it asking finger print authentication

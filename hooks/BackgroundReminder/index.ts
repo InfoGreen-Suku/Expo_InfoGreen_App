@@ -269,9 +269,9 @@ const checkForReminderActions = async () => {
             }
             return task;
           });
-          // // Schedule new snooze alarm immediately
-          // const snoozeMs = new Date(new Date().getTime() + snoozeMinutes * 60000).getTime();
-          // scheduleReminder(String(lastMessage), snoozeMs);
+          // Schedule new snooze alarm immediately to avoid relying on polling cadence
+          const snoozeMs = new Date(new Date().getTime() + snoozeMinutes * 60000).getTime();
+          scheduleReminder(String(lastMessage), snoozeMs);
         } else if (lastAction === "onDismiss") {
           updatedReminders = reminders.map((task: any) => {
             if (task.message === lastMessage) {

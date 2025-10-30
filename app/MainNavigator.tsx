@@ -21,15 +21,23 @@ export default function MainNavigator() {
   // Determine initial route based on userStatus
   // const initialRouteName = userStatus === 'success' ? 'Webview' : 'PendingScreen';
   const initialRouteName = () => {
-    if (userData ) {
-      switch (userData?.authentication) {
+    if (userData) {
+      const { authentication, status } = userData;
+
+      // If authentication is missing, fall back to status check
+      if (!authentication) {
+        return status === 'success' ? 'Webview' : 'PendingScreen';
+      }
+
+      switch (authentication) {
         case 'yes':
-          return userData?.status === 'success' ? 'Pin' : 'PendingScreen';
+          return status === 'success' ? 'Pin' : 'PendingScreen';
         case 'no':
-          return userData?.status === 'success' ? 'Webview' : 'PendingScreen';
+          return status === 'success' ? 'Webview' : 'PendingScreen';
         default:
           return 'PendingScreen';
       }
+
     }
   };
   const initRoute = initialRouteName();
