@@ -26,6 +26,8 @@ import com.facebook.react.bridge.ReactContext;
 import android.util.Log;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 
 public class ReminderActivity extends AppCompatActivity {
     
@@ -173,6 +175,34 @@ public class ReminderActivity extends AppCompatActivity {
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putInt("last_snooze_minutes", minutes);
             editor.apply();
+        } catch (Exception ignored) {}
+
+        // Schedule the snoozed alarm immediately at native level to avoid delays
+        try {
+            long triggerAt = System.currentTimeMillis() + (minutes * 60L * 1000L);
+            String msg = messageText.getText().toString();
+
+            Intent intent = new Intent(this, ReminderAlarmReceiver.class);
+            intent.putExtra("message", msg);
+
+            int requestCode = msg != null ? msg.hashCode() : 0;
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                this,
+                requestCode,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+            );
+
+            AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+            if (alarmManager != null) {
+                // Cancel any existing alarm for this message and schedule the new one
+                alarmManager.cancel(pendingIntent);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAt, pendingIntent);
+                } else {
+                    alarmManager.setExact(AlarmManager.RTC_WAKEUP, triggerAt, pendingIntent);
+                }
+            }
         } catch (Exception ignored) {}
 
         handleReminderAction("onSnooze");

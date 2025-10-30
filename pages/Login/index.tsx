@@ -72,7 +72,8 @@ export default function Login() {
         manufacturer,
         modal,
         productName,
-        applicationVersion
+        applicationVersion,
+        appName
       ] = await Promise.all([
         DeviceInfo.getApiLevel(),
         DeviceInfo.getAndroidId(),
@@ -91,7 +92,8 @@ export default function Login() {
         DeviceInfo.getManufacturer(),
         DeviceInfo.getModel(),
         DeviceInfo.getProduct(),
-        DeviceInfo.getVersion()
+        DeviceInfo.getVersion(),
+        DeviceInfo.getApplicationName()
       ]);
 
       const deviceInfo = {
@@ -112,7 +114,8 @@ export default function Login() {
         manufacturer,
         modal,
         productName,
-        applicationVersion
+        applicationVersion,
+        appName
       };
       setDeviceInfo(deviceInfo);
     } catch (error) {
@@ -224,17 +227,18 @@ export default function Login() {
           appCode,
           subscriptionId: id,
           deviceInfo: deviceInfo,
+          appName: deviceInfo.appName,
           // ciphertext: ciphertext,
           // key: secretKey,
         };
-        console.log(userDetails);
+        // console.log(userDetails);
 
         await AsyncStorage.setItem('userDetails', JSON.stringify(userDetails));
         setisvisible(true);
         // store to server useing axios post method under the keyword of "userDetails"
         const details = await postUserDetails(userDetails);
         dispatch({ type: 'POST_USER_SUCCESS', payload: details });
-        console.log("details", details);
+        // console.log("details", details);
         // navigation.navigate('Webview');
         // Alert.alert('Success', 'User details stored successfully');
       }
