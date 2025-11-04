@@ -41,13 +41,15 @@ export default function RootLayout() {
   //   requestPermissions();
   // }, []);
   return (
-    <ShareIntentProvider>
-      <Provider store={store}>
+    <Provider store={store}>
+      <ShareIntentProvider>
+
         <SafeAreaProvider>
           <Root />
         </SafeAreaProvider>
-      </Provider>
-    </ShareIntentProvider>
+      </ShareIntentProvider>
+    </Provider>
+
   );
 }
 
@@ -84,6 +86,9 @@ function Root() {
     });
   }, []);
 
+  useEffect(() => {
+    console.log('userData from store', userData);
+  }, [userData]);
   const navigateToScreen = (
     screenName: any,
     userId: any,

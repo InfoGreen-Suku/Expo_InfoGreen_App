@@ -364,6 +364,7 @@ export default function Login() {
                   setMobileNumber(text);
                   setMobileNumberError('');
                 }}
+                maxLength={10}
                 onFocus={() => setMobileNumberError('')}
               />
             </View>

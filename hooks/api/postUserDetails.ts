@@ -3,7 +3,7 @@ import axios from "axios";
 
 
 export const postUserDetails = async(userData: any) => {
-  // console.log("data:",userData);
+  console.log("Before userData:",userData);
     try {
       const response = await axios.post('https://infogreen.in/api/infogreen_app_user_details.php', userData);
       console.log("response",response.data);

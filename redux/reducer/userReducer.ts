@@ -15,6 +15,7 @@ const initialState = {
       case 'POST_USER':
         return { ...state, loading: true, error: null };
       case 'POST_USER_SUCCESS':
+        console.log("action.payload",action.payload);
         return { ...state, loading: false, userData: action.payload, error: null };
       case 'POST_USER_FAILURE':
         return { ...state, loading: false, error: action.payload };
