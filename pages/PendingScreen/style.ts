@@ -4,7 +4,7 @@ import { StyleSheet } from "react-native";
 export const styles = StyleSheet.create({
   modalView: {
     margin: 20,
-    marginTop: "50%",
+    marginTop: "65%",
     backgroundColor: "grey",
     borderRadius: 20,
     padding: 35,
@@ -61,6 +61,14 @@ export const styles = StyleSheet.create({
     fontFamily: "Poppins-Light",
   },
 
+  referenceNo: {
+    color: "white",
+    textAlign: "center",
+    fontSize: scaleFont(16),
+    fontFamily: "Poppins-Light",
+    fontWeight: "bold",
+    marginBottom: 20,
+  },
   modalText2: {
     color: "white",
     marginTop: 20,
@@ -108,4 +116,20 @@ export const styles = StyleSheet.create({
     height: "50%",
     resizeMode: "contain",
   },
+  loaderModalView: {
+      margin: 20,
+      marginTop: '80%',
+      backgroundColor: "white",
+      borderRadius: 20,
+      padding: 35,
+      alignItems: 'center',
+      shadowColor: '#fff',
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.25,
+      shadowRadius: 4,
+      elevation: 5,
+    },
 });

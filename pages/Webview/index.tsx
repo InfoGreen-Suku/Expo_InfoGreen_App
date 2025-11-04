@@ -1,9 +1,9 @@
-import AntDesign from '@expo/vector-icons/AntDesign';
-import * as Location from 'expo-location';
-import * as ExpoPrint from 'expo-print';
-import * as SMS from 'expo-sms';
-import * as StoreReview from 'expo-store-review';
-import { useEffect, useRef, useState } from 'react';
+import AntDesign from "@expo/vector-icons/AntDesign";
+import * as Location from "expo-location";
+import * as ExpoPrint from "expo-print";
+import * as SMS from "expo-sms";
+import * as StoreReview from "expo-store-review";
+import { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -14,35 +14,40 @@ import {
   Platform,
   Text,
   ToastAndroid,
-  View
-} from 'react-native';
+  View,
+} from "react-native";
 
-import { useNavigation } from '@react-navigation/native';
-import Share from 'react-native-share';
+import { useNavigation } from "@react-navigation/native";
+import Share from "react-native-share";
 
-import { Linking } from 'react-native';
-import { WebView } from 'react-native-webview';
-import { useDispatch, useSelector } from 'react-redux';
+import { Linking } from "react-native";
+import { WebView } from "react-native-webview";
+import { useDispatch, useSelector } from "react-redux";
 // import ReceiveSharingIntent from 'react-native-receive-sharing-intent';
-import { scaleFont } from '@/constants/ScaleFont';
+import { scaleFont } from "@/constants/ScaleFont";
 // import { startReminderService } from '@/hooks/BackgroundReminder';
-import { CameraType, CameraView } from 'expo-camera';
-import { Directory, File, Paths } from 'expo-file-system';
+import { CameraType, CameraView } from "expo-camera";
+import { Directory, File, Paths } from "expo-file-system";
 
-import { styles } from './style';
+import { styles } from "./style";
 
-import { PermissionModal } from '@/constants/utils/permissionModal';
-import { postUserDetails } from '@/hooks/api/postUserDetails';
-import { startReminderService } from '@/hooks/BackgroundReminder';
-import { ensureExactAlarmPermission, ensureOverlayPermission } from '@/hooks/BackgroundReminder/ReminderModule';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useShareIntent } from 'expo-share-intent';
-import DeviceInfo from 'react-native-device-info';
+import { PermissionModal } from "@/constants/utils/permissionModal";
+import { postUserDetails } from "@/hooks/api/postUserDetails";
+import { startReminderService } from "@/hooks/BackgroundReminder";
+import {
+  ensureExactAlarmPermission,
+  ensureOverlayPermission,
+} from "@/hooks/BackgroundReminder/ReminderModule";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useShareIntent } from "expo-share-intent";
+import DeviceInfo from "react-native-device-info";
 
 export default function Webview() {
   const users = useSelector((store: any) => store?.user?.userData);
-  const URL = users?.url
-  const SharedFile_URL = useSelector((store: any) => store?.user?.SharedFile_URL);
+  const URL = users?.url;
+  const SharedFile_URL = useSelector(
+    (store: any) => store?.user?.SharedFile_URL
+  );
   const Image_URL = useSelector((store: any) => store?.user?.Image_URL);
   const Audio_URL = useSelector((store: any) => store?.user?.Audio_URL);
   const webViewRef = useRef<any>(null);
@@ -52,7 +57,9 @@ export default function Webview() {
   const [state, setstate] = useState(false);
   const [location, setLocation] = useState<any | null>(null);
   const userStatus = useSelector((store: any) => store?.user?.userData?.status);
-  const isReminderServiceEnabled = useSelector((store: any) => store?.user?.isReminderServiceEnabled);
+  const isReminderServiceEnabled = useSelector(
+    (store: any) => store?.user?.isReminderServiceEnabled
+  );
   const navigation = useNavigation<any>();
   const [Location_Id, setLocation_Id] = useState(null);
   const [bardcode_id, setbardcode_id] = useState(null);
@@ -60,16 +67,17 @@ export default function Webview() {
   const [scannedDataArray, setScannedDataArray] = useState<any[]>([]);
   const [DownloadmodalVisible, setDownloadModalVisible] = useState(false);
   const [PrintmodalVisible, setPrintModalVisible] = useState(false);
-  const [AndroidID, setAndroidID] = useState('');
-  const { hasShareIntent, shareIntent, resetShareIntent, error } = useShareIntent();
+  const [AndroidID, setAndroidID] = useState("");
+  const { hasShareIntent, shareIntent, resetShareIntent, error } =
+    useShareIntent();
   //  whatsapp message
   const [messagesSent, setMessagesSent] = useState<any[]>([]);
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
   const [appStateListenerActive, setAppStateListenerActive] = useState(false);
-  const [Image_Url_Id, setImage_Url_Id] = useState('');
-  const [audio_Url_Id, setaudio_Url_Id] = useState('');
+  const [Image_Url_Id, setImage_Url_Id] = useState("");
+  const [audio_Url_Id, setaudio_Url_Id] = useState("");
   const [messages, setmessages] = useState([]);
-  const [facing, setFacing] = useState<CameraType>('back');
+  const [facing, setFacing] = useState<CameraType>("back");
   const [appOpenCount, setAppOpenCount] = useState(0);
   const lastReviewRequest = useRef<number>(0);
   const [appState, setAppState] = useState(AppState.currentState);
@@ -82,6 +90,7 @@ export default function Webview() {
   const [permissionModalVisible, setPermissionModalVisible] = useState(false);
   const hasPostedRef = useRef(false);
   const dispatch = useDispatch();
+  const [deviceInfo, setDeviceInfo] = useState<any>(null);
   // Function to check network status if network is not detected it navigate to network page
 
   // const callHtmlFunction = () => {
@@ -94,35 +103,35 @@ export default function Webview() {
 
   useEffect(() => {
     if (hasShareIntent && shareIntent) {
-      console.log('📩 Received share intent:', shareIntent);
+      console.log("📩 Received share intent:", shareIntent);
 
       // Check if files exist
       if (shareIntent.files && shareIntent.files.length > 0) {
         shareIntent.files.forEach((item: any) => {
           const filePath = item.uri || item.path;
           const fileExtension = filePath
-            ? filePath.substring(filePath.lastIndexOf('.') + 1).toLowerCase()
+            ? filePath.substring(filePath.lastIndexOf(".") + 1).toLowerCase()
             : null;
 
           if (filePath) {
             switch (fileExtension) {
-              case 'pdf':
+              case "pdf":
                 console.log(`PDF File: ${filePath}`);
                 break;
-              case 'jpg':
-              case 'jpeg':
+              case "jpg":
+              case "jpeg":
                 console.log(`JPG File: ${filePath}`);
                 break;
-              case 'mp4':
+              case "mp4":
                 console.log(`MP4 File: ${filePath}`);
                 break;
-              case 'mp3':
+              case "mp3":
                 console.log(`MP3 File: ${filePath}`);
                 break;
               default:
                 console.log(`Unknown File Type: ${filePath}`);
             }
-            navigation.navigate('Sharedfile', { filepath: filePath });
+            navigation.navigate("Sharedfile", { filepath: filePath });
           }
         });
       }
@@ -131,7 +140,7 @@ export default function Webview() {
         const sharedContent = shareIntent.webUrl || shareIntent.text;
         if (sharedContent) {
           console.log(`URL/Text: ${sharedContent}`);
-          navigation.navigate('Sharedfile', { filepath: sharedContent });
+          navigation.navigate("Sharedfile", { filepath: sharedContent });
         }
       }
 
@@ -152,7 +161,6 @@ export default function Webview() {
     }
   }, [isCameraOpen]);
 
-
   useEffect(() => {
     if (messages.length > 0) {
       sendNextMessage();
@@ -160,31 +168,103 @@ export default function Webview() {
   }, [messages]);
 
   useEffect(() => {
-    if (!hasPostedRef.current) {
+    if (deviceInfo && !hasPostedRef.current) {
       hasPostedRef.current = true;
       postUserDetailsData();
     }
-  }, []);
-
+  }, [deviceInfo]);
+  const getAllDeviceInfo = async () => {
+    try {
+      const [
+        androidApiLevel,
+        androidID,
+        brand,
+        systemName,
+        systemVersion,
+        applicationBuildVersion,
+        operatorName,
+        device,
+        deviceID,
+        deviceName,
+        fontScale,
+        hardware,
+        ipAddress,
+        macAddress,
+        manufacturer,
+        modal,
+        productName,
+        applicationVersion,
+        appName,
+      ] = await Promise.all([
+        DeviceInfo.getApiLevel(),
+        DeviceInfo.getAndroidId(),
+        DeviceInfo.getBrand(),
+        DeviceInfo.getSystemName(),
+        DeviceInfo.getSystemVersion(),
+        DeviceInfo.getBuildNumber(),
+        DeviceInfo.getCarrier(),
+        DeviceInfo.getDevice(),
+        DeviceInfo.getDeviceId(),
+        DeviceInfo.getDeviceName(),
+        DeviceInfo.getFontScale(),
+        DeviceInfo.getHardware(),
+        DeviceInfo.getIpAddress(),
+        DeviceInfo.getMacAddress(),
+        DeviceInfo.getManufacturer(),
+        DeviceInfo.getModel(),
+        DeviceInfo.getProduct(),
+        DeviceInfo.getVersion(),
+        DeviceInfo.getApplicationName(),
+      ]);
+      const deviceInfo = {
+        androidApiLevel,
+        androidID,
+        brand,
+        systemName,
+        systemVersion,
+        applicationBuildVersion,
+        operatorName,
+        device,
+        deviceID,
+        deviceName,
+        fontScale,
+        hardware,
+        ipAddress,
+        macAddress,
+        manufacturer,
+        modal,
+        productName,
+        applicationVersion,
+        appName,
+      };
+      setDeviceInfo(deviceInfo);
+    } catch (error) {
+      console.error("Error getting device info:", error);
+    }
+  };
   const postUserDetailsData = async () => {
     try {
-      const userdetails = await AsyncStorage.getItem('userDetails');
+      const userdetails = await AsyncStorage.getItem("userDetails");
       if (userdetails) {
         const userDetails = JSON.parse(userdetails);
-      
+
         if (userDetails !== null || userDetails !== undefined) {
-          const details = await postUserDetails(userDetails)
-          dispatch({ type: 'POST_USER_SUCCESS', payload: details });
+          if(!userDetails.deviceInfo || !userDetails.appName || !userDetails.userId || userDetails.userId.trim()===''){
+            userDetails.deviceInfo=deviceInfo,
+            userDetails.appName=deviceInfo?.appName,
+            userDetails.userId=deviceInfo?.androidID
+          }
+          AsyncStorage.setItem("userDetails",JSON.stringify(userDetails))
+          const details = await postUserDetails(userDetails);
+          dispatch({ type: "POST_USER_SUCCESS", payload: details });
           // console.log("details",details);
           // Check if biometric authentication is supported once it supported whenever the user open the app it asking finger print authentication
         }
       }
-    }
-    catch (error) {
+    } catch (error) {
       console.log("error", error);
     }
-  }
-
+  };
 
   const checkAndRequestReview = async () => {
     console.log(appOpenCount);
@@ -199,31 +279,32 @@ export default function Webview() {
 
       if (
         appOpenCount === 5 &&
-        await StoreReview.hasAction() &&
-        await StoreReview.isAvailableAsync()
+        (await StoreReview.hasAction()) &&
+        (await StoreReview.isAvailableAsync())
       ) {
         await StoreReview.requestReview();
         lastReviewRequest.current = now;
       }
     } catch (error) {
-      console.log('Error requesting review:', error);
+      console.log("Error requesting review:", error);
     }
   };
 
   const getId = async () => {
-    const id = await AsyncStorage.getItem('subscriptionId');
+    const id = await AsyncStorage.getItem("subscriptionId");
     setSubscriptionID(id);
   };
 
   const checkPermissions = async () => {
-    const isAndroid10OrAbove = Platform.OS === 'android' && Number(Platform.Version) > 31;
+    const isAndroid10OrAbove =
+      Platform.OS === "android" && Number(Platform.Version) > 31;
 
     if (isAndroid10OrAbove) {
       const granted = await PermissionsAndroid.check(
-        PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
+        PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
       );
       if (!granted) {
-        navigation.navigate('PermissionScreen');
+        navigation.navigate("PermissionScreen");
       }
     }
 
@@ -232,7 +313,6 @@ export default function Webview() {
       await ensureExactAlarmPermission();
       // await ensureBatteryOptimizationExemption();
     }
-
   };
   useEffect(() => {
     if (isReminderServiceEnabled) {
@@ -242,14 +322,14 @@ export default function Webview() {
 
   useEffect(() => {
     // getting androidID
-    DeviceInfo.getAndroidId().then(androidId => {
+    DeviceInfo.getAndroidId().then((androidId) => {
       setAndroidID(androidId);
     });
-    const appversion = DeviceInfo.getBuildNumber()
+    const appversion = DeviceInfo.getBuildNumber();
     setAppVersion(appversion);
     getId();
     checkPermissions();
-
+    getAllDeviceInfo();
     // Handle app state changes for review
 
     // location getting
@@ -268,7 +348,7 @@ export default function Webview() {
         })();
       `;
       webViewRef.current.injectJavaScript(script);
-    };
+    }
     scannedDataArray.forEach((scannedData, index) => {
       if (scannedData) {
         const dynamicId = bardcode_id;
@@ -299,7 +379,7 @@ export default function Webview() {
         })();
       `;
       webViewRef.current.injectJavaScript(script);
-    };
+    }
 
     if (Audio_URL !== null && webViewRef.current) {
       const Audiourl = JSON.stringify(Audio_URL);
@@ -315,7 +395,7 @@ export default function Webview() {
         })();
       `;
       webViewRef.current.injectJavaScript(script1);
-    };
+    }
 
     if (SharedFile_URL !== null && webViewRef.current) {
       const SharedFileURL = JSON.stringify(SharedFile_URL);
@@ -330,13 +410,13 @@ export default function Webview() {
         })();
       `;
       webViewRef.current.injectJavaScript(script1);
-    };
+    }
     // message to whatsapp
     const handleAppStateChange = (nextAppState: any) => {
       if (
         messages.length > 0 &&
         messagesSent.length < messages.length &&
-        nextAppState === 'active'
+        nextAppState === "active"
       ) {
         setTimeout(() => {
           // Navigate back to the WebView's initial state or a specific page
@@ -344,7 +424,7 @@ export default function Webview() {
             webViewRef.current.goBack();
           }
           // Proceed to the next message
-          setCurrentMessageIndex(prevIndex => prevIndex + 1);
+          setCurrentMessageIndex((prevIndex) => prevIndex + 1);
           sendNextMessage();
         }, 100);
       }
@@ -352,8 +432,8 @@ export default function Webview() {
 
     if (appStateListenerActive) {
       const subscription = AppState.addEventListener(
-        'change',
-        handleAppStateChange,
+        "change",
+        handleAppStateChange
       );
       return () => {
         subscription.remove();
@@ -362,18 +442,21 @@ export default function Webview() {
 
     // Handle hardware back press for moving previous page and exit the app
 
-    const reviewSubscription = AppState.addEventListener('change', nextAppState => {
-      if (appState.match(/inactive|background/) && nextAppState === 'active') {
-        // App has come to the foreground
-        setAppOpenCount(prev => prev + 1);
-        checkAndRequestReview();
+    const reviewSubscription = AppState.addEventListener(
+      "change",
+      (nextAppState) => {
+        if (
+          appState.match(/inactive|background/) &&
+          nextAppState === "active"
+        ) {
+          // App has come to the foreground
+          setAppOpenCount((prev) => prev + 1);
+          checkAndRequestReview();
+        }
+
+        setAppState(nextAppState);
       }
-
-      setAppState(nextAppState);
-    });
-
-
-
+    );
 
     return () => {
       reviewSubscription.remove();
@@ -394,12 +477,11 @@ export default function Webview() {
     SharedFile_URL,
     appOpenCount,
     appState,
-
   ]);
 
   useEffect(() => {
     const backAction = () => {
-      console.log('canGoBackRef.current:', canGoBackRef.current);
+      console.log("canGoBackRef.current:", canGoBackRef.current);
       if (canGoBackRef.current && webViewRef.current) {
         webViewRef.current.goBack();
         lastBackPressRef.current = 0; // Reset timer when going back in WebView
@@ -408,19 +490,19 @@ export default function Webview() {
 
       const now = Date.now();
       if (lastBackPressRef.current && now - lastBackPressRef.current < 2000) {
-        console.log('Exiting app');
+        console.log("Exiting app");
         BackHandler.exitApp(); // exit app on second press
-        console.log('Exiting app 2');
+        console.log("Exiting app 2");
         return true;
       }
-      ToastAndroid.show('Press back again to exit', ToastAndroid.SHORT);
+      ToastAndroid.show("Press back again to exit", ToastAndroid.SHORT);
       lastBackPressRef.current = now;
       return true;
     };
 
     const backHandler = BackHandler.addEventListener(
-      'hardwareBackPress',
-      backAction,
+      "hardwareBackPress",
+      backAction
     );
 
     return () => backHandler.remove();
@@ -523,17 +605,14 @@ export default function Webview() {
     try {
       const isAvailable = await SMS.isAvailableAsync();
       if (isAvailable) {
-        const { result } = await SMS.sendSMSAsync(
-          [number],
-          message
-        );
-        console.log('SMS sent successfully', result);
+        const { result } = await SMS.sendSMSAsync([number], message);
+        console.log("SMS sent successfully", result);
       } else {
-        Alert.alert('Error', 'SMS is not available on this device');
+        Alert.alert("Error", "SMS is not available on this device");
       }
     } catch (error) {
-      console.error('Failed to send SMS', error);
-      Alert.alert('Error', 'Failed to send SMS');
+      console.error("Failed to send SMS", error);
+      Alert.alert("Error", "Failed to send SMS");
     }
   };
   // message to whatsapp
@@ -548,7 +627,7 @@ export default function Webview() {
 
       await Linking.openURL(deepLink);
     } catch (error: any) {
-      console.log('Error sharing to WhatsApp:', error.message);
+      console.log("Error sharing to WhatsApp:", error.message);
     }
   };
 
@@ -565,7 +644,7 @@ export default function Webview() {
         setCurrentMessageIndex(currentMessageIndex + 1);
         setAppStateListenerActive(true); // Activate app state listener after sending a message
       } catch (error: any) {
-        console.log('Error sending message:', error.message);
+        console.log("Error sending message:", error.message);
       }
     }
   };
@@ -591,16 +670,16 @@ export default function Webview() {
       sharePDF(uri);
     } catch (error) {
       setDownloadModalVisible(false);
-      Alert.alert('Error', 'Failed to convert and share URL as PDF');
-      console.error('Error in URLtoShare:', error);
+      Alert.alert("Error", "Failed to convert and share URL as PDF");
+      console.error("Error in URLtoShare:", error);
     }
   };
 
   const sharePDF = (pdfPath: any) => {
     const shareOptions = {
       url: `content://${pdfPath}`,
-      type: 'application/pdf',
-      title: 'Share PDF File',
+      type: "application/pdf",
+      title: "Share PDF File",
     };
 
     Share.open(shareOptions)
@@ -612,7 +691,11 @@ export default function Webview() {
       });
   };
   //   // convert url to pdf and navigate to print page for printing the pdf
-  const convertUrlToPdf = async (PrintUrl: string, name: string, number: string) => {
+  const convertUrlToPdf = async (
+    PrintUrl: string,
+    name: string,
+    number: string
+  ) => {
     try {
       setPrintModalVisible(true);
       const response = await fetch(PrintUrl);
@@ -625,7 +708,7 @@ export default function Webview() {
       });
 
       setPrintModalVisible(false);
-      navigation.navigate('Print', {
+      navigation.navigate("Print", {
         pdfPath: uri,
         name: name,
         number: number,
@@ -633,8 +716,8 @@ export default function Webview() {
       });
     } catch (error) {
       setPrintModalVisible(false);
-      Alert.alert('Error converting URL to PDF', 'Please try again!');
-      console.log('Error converting URL to PDF:', error);
+      Alert.alert("Error converting URL to PDF", "Please try again!");
+      console.log("Error converting URL to PDF:", error);
     }
   };
 
@@ -642,7 +725,7 @@ export default function Webview() {
 
   const handleLinkPress = (url: any) => {
     // Check if the URL is a phone number link
-    if (url.startsWith('tel:')) {
+    if (url.startsWith("tel:")) {
       // Open the phone dialer
       Linking.openURL(url);
       return false;
@@ -653,50 +736,50 @@ export default function Webview() {
   const handleWebViewMessage = (event: any) => {
     const message = event.nativeEvent.data;
     if (message) {
-      const [action, index, index1, index2] = message.split('&SPLIT&');
-      if (action === 'location') {
+      const [action, index, index1, index2] = message.split("&SPLIT&");
+      if (action === "location") {
         setLocation_Id(index);
-        console.log('loction');
-        getLocation()
+        console.log("loction");
+        getLocation();
       }
-      if (action === 'barcode') {
+      if (action === "barcode") {
         requestCameraPermission();
         setbardcode_id(index);
       }
-      if (action === 'pdf') {
+      if (action === "pdf") {
         const pdfURl = index;
         downloadpdf(pdfURl);
       }
-      if (action === 'sms') {
+      if (action === "sms") {
         sendMessageSMS(index1, index);
       }
-      if (action === 'send') {
+      if (action === "send") {
         setmessages(JSON.parse(index));
       }
-      if (action === 'data') {
+      if (action === "data") {
         const locationData = JSON.parse(index);
       }
-      if (action === 'record') {
-        navigation.navigate('Record', { ClientId: index1, Path: index });
+      if (action === "record") {
+        navigation.navigate("Record", { ClientId: index1, Path: index });
         setaudio_Url_Id(index2);
       }
-      if (action === 'camera') {
-        navigation.navigate('Camera', { ClientId: index1, Path: index });
+      if (action === "camera") {
+        navigation.navigate("Camera", { ClientId: index1, Path: index });
         setImage_Url_Id(index2);
       }
-      if (action === 'print') {
+      if (action === "print") {
         convertUrlToPdf(index, index1, index2);
       }
-      if (action === 'Number') {
+      if (action === "Number") {
         console.log(index);
         handleLinkPress(index);
       }
-      if (action === 'Share_pdf') {
+      if (action === "Share_pdf") {
         URLtoShare(index);
         // navigation.navigate('ApiLogsScreen');
       }
-      if (action === 'openLink') {
-        navigation.navigate('OpenLink', { link: index, name: index1 });
+      if (action === "openLink") {
+        navigation.navigate("OpenLink", { link: index, name: index1 });
       }
     }
   };
@@ -704,7 +787,7 @@ export default function Webview() {
   // handle the download pdf part once the user click the mentioned class name box or anything the pdf is download in user device inside the download directory
 
   const downloadpdf = async (pdfURl: string) => {
-    const fileName = 'downloaded_pdf.pdf'; // or derive from URL
+    const fileName = "downloaded_pdf.pdf"; // or derive from URL
     const targetDirectory = new Directory(Paths.document);
     const filePath = `${targetDirectory.uri}/${fileName}`;
     const targetFile = new File(filePath);
@@ -722,10 +805,14 @@ export default function Webview() {
       const fileInfo = await targetFile.info();
       if (fileInfo.exists) {
         setDownloadModalVisible(false);
-        Alert.alert('Already Downloaded', 'Do you want to open the existing PDF?', [
-          { text: 'Cancel', style: 'cancel' },
-          { text: 'Open', onPress: () => openPDF(targetFile.uri) },
-        ]);
+        Alert.alert(
+          "Already Downloaded",
+          "Do you want to open the existing PDF?",
+          [
+            { text: "Cancel", style: "cancel" },
+            { text: "Open", onPress: () => openPDF(targetFile.uri) },
+          ]
+        );
         return;
       }
 
@@ -734,25 +821,24 @@ export default function Webview() {
       const downloadedFile = await File.downloadFileAsync(
         encodedUrl,
         targetFile,
-        { headers: { Accept: 'application/pdf' } }
+        { headers: { Accept: "application/pdf" } }
       );
 
       setDownloadModalVisible(false);
-      console.log('Finished downloading to:', downloadedFile.uri);
-      Alert.alert('Process Completed', 'Do you want to open PDF file?', [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Open', onPress: () => openPDF(downloadedFile.uri) },
+      console.log("Finished downloading to:", downloadedFile.uri);
+      Alert.alert("Process Completed", "Do you want to open PDF file?", [
+        { text: "Cancel", style: "cancel" },
+        { text: "Open", onPress: () => openPDF(downloadedFile.uri) },
       ]);
-
     } catch (error) {
       setDownloadModalVisible(false);
-      Alert.alert('Failed to download PDF', 'Please try again');
-      console.error('Download error:', error);
+      Alert.alert("Failed to download PDF", "Please try again");
+      console.error("Download error:", error);
     }
   };
   // once the pdf is downloaded it asking user to open or share pdf, if the user click the open button it open the pdf in same app in different page.
   const openPDF = (pdfPath: any) => {
-    navigation.navigate('PDF', { pdfPath: pdfPath });
+    navigation.navigate("PDF", { pdfPath: pdfPath });
   };
 
   // Handle QRcode for getting the details from the mention barcode or qrcode
@@ -771,8 +857,8 @@ export default function Webview() {
       // Close the camera
       setIsCameraOpen(false);
     } catch (error) {
-      console.log('Error parsing scanned QR code data:', error);
-      Alert.alert('Error', 'Failed to parse scanned QR code data');
+      console.log("Error parsing scanned QR code data:", error);
+      Alert.alert("Error", "Failed to parse scanned QR code data");
     }
   };
 
@@ -780,12 +866,12 @@ export default function Webview() {
     const granted = await PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.CAMERA,
       {
-        title: 'Camera Permission',
-        message: 'This app needs access to your camera.',
-        buttonNeutral: 'Ask Me Later',
-        buttonNegative: 'Cancel',
-        buttonPositive: 'OK',
-      },
+        title: "Camera Permission",
+        message: "This app needs access to your camera.",
+        buttonNeutral: "Ask Me Later",
+        buttonNegative: "Cancel",
+        buttonPositive: "OK",
+      }
     );
     if (granted === PermissionsAndroid.RESULTS.GRANTED) {
       setIsCameraOpen(true);
@@ -799,16 +885,16 @@ export default function Webview() {
   // asking permission to user for location tracking
   const getLocation = async () => {
     try {
-      if (Platform.OS === 'android') {
+      if (Platform.OS === "android") {
         const granted = await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
           {
-            title: 'Location Permission',
-            message: 'This app needs access to your location.',
-            buttonNeutral: 'Ask Me Later',
-            buttonNegative: 'Cancel',
-            buttonPositive: 'OK',
-          },
+            title: "Location Permission",
+            message: "This app needs access to your location.",
+            buttonNeutral: "Ask Me Later",
+            buttonNegative: "Cancel",
+            buttonPositive: "OK",
+          }
         );
         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
           setModalVisible(true); // Start loading
@@ -817,7 +903,11 @@ export default function Webview() {
           });
           setLocation(location);
           setModalVisible(false);
-          console.log('Location:', location.coords.latitude, location.coords.longitude);
+          console.log(
+            "Location:",
+            location.coords.latitude,
+            location.coords.longitude
+          );
         } else {
           setModalVisible(false); // Stop loading
           setPermissionModalVisible(true);
@@ -828,7 +918,11 @@ export default function Webview() {
         });
         setLocation(location);
         setModalVisible(false);
-        console.log('Location:', location.coords.latitude, location.coords.longitude);
+        console.log(
+          "Location:",
+          location.coords.latitude,
+          location.coords.longitude
+        );
       }
     } catch (err) {
       console.log(err);
@@ -836,28 +930,23 @@ export default function Webview() {
     }
   };
 
-
-
   return (
     <>
       {/* here i am checking the user status for getting the link from api if user status is pending the api doesn't provide the link that case it navigate to bending screen once the status is success it will provid the link and user navigate to webview  */}
 
-      <View >
+      <View>
         <Modal
           animationType="slide"
           transparent={true}
           visible={modalVisible}
           onRequestClose={() => {
             setModalVisible(!modalVisible);
-          }}>
-          <View >
+          }}
+        >
+          <View>
             <View style={styles.modalView}>
-              {!state ? (
-                <ActivityIndicator size="large" color="#00ff00" />
-              ) : (
-                ''
-              )}
-              <Text style={{ color: 'black', fontSize: scaleFont(16) }}>
+              {!state ? <ActivityIndicator size="large" color="#00ff00" /> : ""}
+              <Text style={{ color: "black", fontSize: scaleFont(16) }}>
                 Getting your Location....
               </Text>
             </View>
@@ -880,7 +969,7 @@ export default function Webview() {
         incognito={true}
         pullToRefreshEnabled={false}
         ref={webViewRef}
-        onNavigationStateChange={navState => {
+        onNavigationStateChange={(navState) => {
           setCanGoBack(navState.canGoBack);
           canGoBackRef.current = navState.canGoBack; // keep latest value
         }}
@@ -889,24 +978,25 @@ export default function Webview() {
         onMessage={handleWebViewMessage}
         onError={(e) => {
           const { description } = e.nativeEvent;
-          console.warn('WebView Error:', description);
-          Alert.alert('Page Load Error', description, [
-            { text: 'Retry', onPress: () => webViewRef.current?.reload() },
+          console.warn("WebView Error:", description);
+          Alert.alert("Page Load Error", description, [
+            { text: "Retry", onPress: () => webViewRef.current?.reload() },
           ]);
         }}
       />
-      <View >
+      <View>
         <Modal
           animationType="slide"
           transparent={true}
           visible={DownloadmodalVisible}
           onRequestClose={() => {
             setDownloadModalVisible(!DownloadmodalVisible);
-          }}>
-          <View >
+          }}
+        >
+          <View>
             <View style={styles.modalView}>
               <ActivityIndicator size="large" color="#00ff00" />
-              <Text style={{ color: 'black', fontSize: scaleFont(15) }}>
+              <Text style={{ color: "black", fontSize: scaleFont(15) }}>
                 Please wait your Pdf is Processing
               </Text>
             </View>
@@ -914,18 +1004,19 @@ export default function Webview() {
         </Modal>
       </View>
       {/* for print modal */}
-      <View >
+      <View>
         <Modal
           animationType="slide"
           transparent={true}
           visible={PrintmodalVisible}
           onRequestClose={() => {
             setPrintModalVisible(!PrintmodalVisible);
-          }}>
-          <View >
+          }}
+        >
+          <View>
             <View style={styles.modalView}>
               <ActivityIndicator size="large" color="#00ff00" />
-              <Text style={{ color: 'black', fontSize: scaleFont(15) }}>
+              <Text style={{ color: "black", fontSize: scaleFont(15) }}>
                 Please wait your Pdf is Generating
               </Text>
             </View>
@@ -937,14 +1028,18 @@ export default function Webview() {
         <Modal
           visible={isCameraOpen}
           onRequestClose={() => setIsCameraOpen(false)}
-          animationType="slide">
-
-
+          animationType="slide"
+        >
           <View style={styles.cameraContainer}>
             {/* Header */}
             <View style={styles.cameraHeader}>
               <Text style={styles.barcodeText}>BarCode Scanner</Text>
-              <AntDesign name="close-circle" size={30} color="#fff" onPress={() => setIsCameraOpen(false)} />
+              <AntDesign
+                name="close-circle"
+                size={30}
+                color="#fff"
+                onPress={() => setIsCameraOpen(false)}
+              />
             </View>
 
             {/* Camera View */}
@@ -952,7 +1047,23 @@ export default function Webview() {
               <CameraView
                 style={styles.cameraPreview}
                 facing={facing}
-                barcodeScannerSettings={{ barcodeTypes: ['aztec', 'ean13', 'ean8', 'qr', 'pdf417', 'upc_e', 'datamatrix', 'code39', 'code93', 'itf14', 'codabar', 'code128', 'upc_a'] }}
+                barcodeScannerSettings={{
+                  barcodeTypes: [
+                    "aztec",
+                    "ean13",
+                    "ean8",
+                    "qr",
+                    "pdf417",
+                    "upc_e",
+                    "datamatrix",
+                    "code39",
+                    "code93",
+                    "itf14",
+                    "codabar",
+                    "code128",
+                    "upc_a",
+                  ],
+                }}
                 onBarcodeScanned={(result: any) => {
                   if (scanned) return;
                   setScanned(true);
@@ -970,13 +1081,17 @@ export default function Webview() {
               </View>
             </View>
           </View>
-
         </Modal>
       )}
 
-
       {permissionModalVisible && (
-        <PermissionModal visible={permissionModalVisible} onClose={() => { setPermissionModalVisible(false); Linking.openSettings() }} />
+        <PermissionModal
+          visible={permissionModalVisible}
+          onClose={() => {
+            setPermissionModalVisible(false);
+            Linking.openSettings();
+          }}
+        />
       )}
     </>
   );

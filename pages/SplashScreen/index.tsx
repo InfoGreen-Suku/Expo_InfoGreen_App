@@ -56,7 +56,6 @@ export default function Splashscreen() {
         navigation.navigate('WelcomeScreen');
       } else {
         const userDetails = JSON.parse(savedUserDetails);
-        console.log(userDetails);
         if(userDetails!==null ||userDetails!==undefined){
           const details=await postUserDetails(userDetails)
           dispatch({ type: 'POST_USER_SUCCESS', payload: details });
