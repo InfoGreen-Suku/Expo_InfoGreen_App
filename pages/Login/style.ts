@@ -14,7 +14,7 @@ export const styles = StyleSheet.create({
       alignItems: 'center',
     },
     input: {
-      width: '80%',
+      width: '100%',
       height: 40,
       borderBottomWidth: 2,
       borderBottomColor: '#009333',
@@ -61,7 +61,7 @@ export const styles = StyleSheet.create({
     cameraContainer: {
       flex: 1,
       justifyContent: 'center',
-      backgroundColor: '#fff',
+      backgroundColor: '#009333',
       
     },
     cameraPreview: {
