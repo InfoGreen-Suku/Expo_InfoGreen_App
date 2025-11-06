@@ -86,9 +86,7 @@ function Root() {
     });
   }, []);
 
-  useEffect(() => {
-    console.log('userData from store', userData);
-  }, [userData]);
+ 
   const navigateToScreen = (
     screenName: any,
     userId: any,

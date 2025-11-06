@@ -978,7 +978,7 @@ export default function Webview() {
         onMessage={handleWebViewMessage}
         onError={(e) => {
           const { description } = e.nativeEvent;
-          console.warn("WebView Error:", description);
+          // console.warn("WebView Error:", description);
           Alert.alert("Page Load Error", description, [
             { text: "Retry", onPress: () => webViewRef.current?.reload() },
           ]);

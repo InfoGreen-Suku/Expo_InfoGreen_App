@@ -59,7 +59,7 @@ export const styles = StyleSheet.create({
     cameraContainer: {
       flex: 1,
       justifyContent: 'center',
-      backgroundColor: '#fff', // Dimmed background
+      backgroundColor: '#009333', // Dimmed background
     },
     cameraPreview: {
       width: ScreenWidth,

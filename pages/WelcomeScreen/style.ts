@@ -20,7 +20,7 @@ export const styles = StyleSheet.create({
       fontSize: scaleFont(14),
       maxWidth: '70%',
       textAlign: 'center',
-      marginBottom: 300,
+      marginBottom: 100,
     },
     image: {
       height: 300,

@@ -1,7 +1,7 @@
 import { scaleFont } from '@/constants/ScaleFont'; // Assuming this utility is available
 import { useNavigation } from '@react-navigation/native';
-import React, { useEffect, useState } from 'react';
-import { BackHandler, Dimensions, Image, Text, TouchableHighlight, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { BackHandler, Dimensions, FlatList, Image, Text, TouchableHighlight, View } from 'react-native';
 import { styles } from './style'; // Assuming styles are defined here
 
 // --- Page Data Definition ---
@@ -25,10 +25,12 @@ const PAGES = [
 
 const TOTAL_PAGES = PAGES.length;
 const ScreenHeight = Dimensions.get('window').height;
+const ScreenWidth = Dimensions.get('window').width;
 export default function WelcomeScreen() {
   const navigation = useNavigation<any>();
   // State to track the current onboarding page index
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
+  const flatListRef = useRef<FlatList<any> | null>(null);
 
   // --- Hardware Back Button Handler ---
   useEffect(() => {
@@ -50,7 +52,9 @@ export default function WelcomeScreen() {
 
   const handleNext = () => {
     if (currentPageIndex < TOTAL_PAGES - 1) {
-      setCurrentPageIndex(prevIndex => prevIndex + 1);
+      const nextIndex = currentPageIndex + 1;
+      flatListRef.current?.scrollToIndex({ index: nextIndex, animated: true });
+      setCurrentPageIndex(nextIndex);
     }
   };
 
@@ -60,7 +64,7 @@ export default function WelcomeScreen() {
   const DotComponent = ({ index }: { index: number }) => {
     const selected = index === currentPageIndex;
     return (
-      <TouchableHighlight underlayColor={'transparent'} onPress={() => setCurrentPageIndex(index)}
+      <TouchableHighlight underlayColor={'transparent'} onPress={() => { setCurrentPageIndex(index); flatListRef.current?.scrollToIndex({ index, animated: true }); }}
         key={index}
         style={[
           styles.dotcomponent, // Assuming styles.dotcomponent exists
@@ -110,27 +114,40 @@ export default function WelcomeScreen() {
   const isLastPage = currentPageIndex === TOTAL_PAGES - 1;
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#fff', justifyContent: 'space-between' }}>
+    <View style={{ flex: 1, backgroundColor: '#fff' }}>
 
-      {/* Header Logo */}
-      <Image
-        style={{ height: '11%', width: '70%', alignSelf: 'center', marginTop: scaleFont(50) }}
-        source={require('../../assets/images/Logo1.png')}
-      />
-
-      {/* Current Onboarding Content */}
-      <View style={{ flex: 1, paddingHorizontal: scaleFont(20), paddingTop: scaleFont(10), alignItems: 'center' }}>
-        <Image
-          style={styles.image}
-          source={currentPage.imageSource}
+      {/* Current Onboarding Content (Swipeable) */}
+      <View style={{ flex: 1, justifyContent: 'center' }}>
+        <FlatList
+          ref={flatListRef}
+          data={PAGES}
+          keyExtractor={(_, index) => index.toString()}
+          horizontal
+          pagingEnabled
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ alignItems: 'center' }}
+          getItemLayout={(_, index) => ({ length: ScreenWidth, offset: ScreenWidth * index, index })}
+          onMomentumScrollEnd={(e) => {
+            const index = Math.round(e.nativeEvent.contentOffset.x / ScreenWidth);
+            setCurrentPageIndex(index);
+          }}
+          renderItem={({ item }) => (
+            <View style={{ width: ScreenWidth, height: ScreenHeight - (ScreenHeight * 0.1 + 10), paddingHorizontal: scaleFont(20), alignItems: 'center', justifyContent: 'center' }}>
+              <Image style={styles.image} source={item.imageSource} />
+              <Text style={styles.title}>{item.title}</Text>
+              <Text style={styles.subtitle}>{item.subtitle}</Text>
+            </View>
+          )}
         />
-        <Text style={styles.title}>{currentPage.title}</Text>
-        <Text style={styles.subtitle}>{currentPage.subtitle}</Text>
       </View>
 
       {/* Bottom Bar (Dots and Buttons) */}
       <View
         style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
           flexDirection: 'row',
           justifyContent: 'space-between',
           alignItems: 'center',

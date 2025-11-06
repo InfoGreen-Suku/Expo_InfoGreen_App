@@ -63,7 +63,7 @@ export default function Network() {
     
   return (
     <View style={styles.conatiner}>
-        <Image source={require("../../assets/images/Logo1.png")}   style={{width:"100%",height:'10%',resizeMode:'contain',alignSelf:'center'}}/>
+        <Image source={require("../../assets/images/Logo.png")}   style={{width:"100%",height:'10%',resizeMode:'contain',alignSelf:'center'}}/>
       <Image source={require("../../assets/images/NetworkImage.png")} style={{width:"100%",height:'40%',resizeMode:'contain'}} />
       <View
         style={styles.btnContainer}>

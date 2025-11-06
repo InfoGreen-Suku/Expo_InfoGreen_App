@@ -156,6 +156,22 @@ export default function Login() {
       setIsCameraOpen(true);
     }
   };
+
+  const requestStoragePermission = async () => {
+    
+    try {
+      const granted = await PermissionsAndroid.requestMultiple(
+        [PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES, PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE],
+      );
+      if (granted['android.permission.READ_MEDIA_IMAGES'] === PermissionsAndroid.RESULTS.GRANTED && granted['android.permission.READ_EXTERNAL_STORAGE'] === PermissionsAndroid.RESULTS.GRANTED) {
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('Error requesting storage permission:', error);
+      return false;
+    }
+  }
   // const method = 'aes-256-cbc';
 
   // // Generate a random IV (Initialization Vector)
@@ -292,8 +308,8 @@ export default function Login() {
       style={styles.background}>
       <View style={{ alignItems: 'center', marginTop: scaleFont(50) }}>
         <Image
-          style={{ height: scaleFont(120), width: '70%', resizeMode: 'contain' }}
-          source={require('../../assets/images/Logo1.png')}
+          style={{ height: scaleFont(100), width: '70%', resizeMode: 'contain' }}
+          source={require('../../assets/images/Logo.png')}
         />
       </View>
       <KeyboardAvoidingView
@@ -302,75 +318,93 @@ export default function Login() {
         keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 50}>
 
         <ScrollView
-          contentContainerStyle={{marginTop: scaleFont(40), paddingHorizontal: scaleFont(20) }} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
+          contentContainerStyle={{ marginTop: scaleFont(40), paddingHorizontal: scaleFont(20) }} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
           <View style={styles.container}>
 
             <Text style={styles.header}>ENTER YOUR DETAILS</Text>
             <Text style={styles.text}>Name</Text>
             <View style={{ flexDirection: 'row' }}>
               <Entypo name="user" size={20} color="#009333" style={{ marginTop: 10 }} />
-              <TextInput
-                style={[
-                  styles.input,
-                  nameError ? { borderBottomColor: 'red' } : null,
-                ]}
-                placeholder="Enter your name"
-                placeholderTextColor="lightgray"
-                keyboardType="default"
-                value={name}
-                onChangeText={text => {
-                  setName(text);
-                  setNameError('');
-                }}
-                onFocus={() => setNameError('')}
-              />
+              <View style={{ position: 'relative', width: '80%' }}>
+                <TextInput
+                  style={[
+                    styles.input,
+                    nameError ? { borderBottomColor: 'red', borderBottomWidth: 1 } : null,
+                  ]}
+                  placeholder="Enter your name"
+                  placeholderTextColor="lightgray"
+                  keyboardType="default"
+                  inputMode="text"
+                  value={name}
+                  onChangeText={text => {
+                    // Allow only letters and single spaces between words
+                    let filteredText = text.replace(/[^a-zA-Z\s]/g, '').replace(/\s{2,}/g, ' ');
+                    // Capitalize first letter of each word
+                    filteredText = filteredText.replace(/\b\w/g, char => char.toUpperCase());
+                    setName(filteredText);
+                    setNameError('');
+                  }}
+                  onFocus={() => setNameError('')}
+                />
+                {nameError && <AntDesign name="exclamation-circle" size={24} color="red" style={{ position: 'absolute', right: 0, bottom: 15 }} /> }
+              </View>
             </View>
-            {nameError ? <Text style={styles.error}>{nameError}</Text> : null}
-            <Text style={styles.text}>Company Name</Text>
+
+            <Text style={styles.text}>Company / Institution Name</Text>
             <View style={{ flexDirection: 'row' }}>
               <MaterialCommunityIcons name="office-building" size={25} color="#009333" style={{ marginTop: 10 }} />
-              <TextInput
-                style={[
-                  styles.input,
-                  companyNameError ? { borderBottomColor: 'red' } : null,
-                ]}
-                placeholder="Enter your Company name"
-                placeholderTextColor="lightgray"
-                keyboardType="default"
-                value={companyName}
-                onChangeText={text => {
-                  setCompanyName(text);
-                  setCompanyNameError('');
-                }}
-                onFocus={() => setCompanyNameError('')}
-              />
+              <View style={{ position: 'relative', width: '80%' }}>
+                <TextInput
+                  style={[
+                    styles.input,
+                    companyNameError ? { borderBottomColor: 'red', borderBottomWidth: 1 } : null,
+                  ]}
+                  placeholder="Enter your Company name"
+                  placeholderTextColor="lightgray"
+                  keyboardType="default"
+                  inputMode="text"
+                  value={companyName}
+                  onChangeText={text => {
+                    // Allow only letters and single spaces between words
+                    let filteredText = text.replace(/[^a-zA-Z\s]/g, '').replace(/\s{2,}/g, ' ');
+                    // Capitalize first letter of each word
+                    filteredText = filteredText.replace(/\b\w/g, char => char.toUpperCase());
+                    setCompanyName(filteredText);
+                    setCompanyNameError('');
+                  }}
+                  onFocus={() => setCompanyNameError('')}
+                />
+                {companyNameError && <AntDesign name="exclamation-circle" size={24} color="red" style={{ position: 'absolute', right: 0, bottom: 15 }} /> }
+              </View>
+
             </View>
-            {companyNameError ? (
-              <Text style={styles.error}>{companyNameError}</Text>
-            ) : null}
+
             <Text style={styles.text}>Mobile Number</Text>
             <View style={{ flexDirection: 'row' }}>
               <Feather name="phone" size={22} color="#009333" style={{ marginTop: 10 }} />
+              <View style={{ position: 'relative', width: '80%' }}>
               <TextInput
                 style={[
                   styles.input,
-                  mobileNumberError ? { borderBottomColor: 'red' } : null,
+                  mobileNumberError ? { borderBottomColor: 'red', borderBottomWidth: 1 } : null,
                 ]}
                 placeholder="Enter your Mobile number"
                 placeholderTextColor="lightgray"
                 keyboardType="numeric"
                 value={mobileNumber}
                 onChangeText={text => {
-                  setMobileNumber(text);
+                  // Allow only numbers and limit to 10 digits
+                  const filteredText = text.replace(/[^0-9]/g, '').slice(0, 10);
+                  setMobileNumber(filteredText);
                   setMobileNumberError('');
                 }}
                 maxLength={10}
-                onFocus={() => setMobileNumberError('')}
-              />
+                  onFocus={() => setMobileNumberError('')}
+                />
+                {mobileNumberError && <AntDesign name="exclamation-circle" size={24} color="red" style={{ position: 'absolute', right: 0, bottom: 15 }} /> }
+              </View>
             </View>
-            {mobileNumberError ? (
-              <Text style={styles.error}>{mobileNumberError}</Text>
-            ) : null}
+
             {/* <Text style={styles.text}>App Code</Text>
               <View style={{flexDirection: 'row'}}>
               <Entypo name="dial-pad" size={20} color="#009333"  style={{marginTop: 10}}/>
