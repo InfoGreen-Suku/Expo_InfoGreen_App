@@ -15,7 +15,7 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 10,
-    backgroundColor: '#009333',
+    backgroundColor: '#008541',
     width:ScreenWidth,
     height:ScreenHeight*0.1,
   },

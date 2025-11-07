@@ -27,7 +27,7 @@ export default function ApiLogsScreen() {
     }, []);
     return (
         <View style={styles.container}>
-            <View style={{ flexDirection: 'row', gap: 50, backgroundColor: '#009333', width: '100%', height: '7%', }} >
+            <View style={{ flexDirection: 'row', gap: 50, backgroundColor: '#008541', width: '100%', height: '7%', }} >
                 <AntDesign name="close" size={scaleFont(25)} color="#fff" style={{ alignSelf: 'center', left: scaleFont(20), top: scaleFont(10), marginBottom: scaleFont(15) }}
                     onPress={() => navigation.goBack()} />
                 <Text style={{ fontSize: scaleFont(20), textAlign: 'center', fontWeight: '500', color: "#fff", top: 12 }}>API Logs</Text>
@@ -37,10 +37,10 @@ export default function ApiLogsScreen() {
             </ScrollView>
             <View style={{ flexDirection: 'row',gap: 10, justifyContent: 'center', alignItems: 'center' }} >
 
-                <TouchableOpacity style={{ backgroundColor: '#009333', padding: 8, width: '45%', borderRadius: 10, marginBottom: scaleFont(15), alignSelf: 'center' }} onPress={clearLogs}>
+                <TouchableOpacity style={{ backgroundColor: '#008541', padding: 8, width: '45%', borderRadius: 10, marginBottom: scaleFont(15), alignSelf: 'center' }} onPress={clearLogs}>
                     <Text style={{ color: '#fff', textAlign: 'center', fontSize: scaleFont(17) }}>Clear Logs</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={{ backgroundColor: '#009333', padding: 8, width: '45%', borderRadius: 10, marginBottom: scaleFont(15), alignSelf: 'center' }} onPress={loadLogs}>
+                <TouchableOpacity style={{ backgroundColor: '#008541', padding: 8, width: '45%', borderRadius: 10, marginBottom: scaleFont(15), alignSelf: 'center' }} onPress={loadLogs}>
                     <Text style={{ color: '#fff', textAlign: 'center', fontSize: scaleFont(17) }}>Refresh Logs</Text>
                 </TouchableOpacity>
             </View>

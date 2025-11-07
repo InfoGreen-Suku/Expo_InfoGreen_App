@@ -14,7 +14,7 @@ export const styles = StyleSheet.create({
       width: '100%',
       height: 40,
       borderBottomWidth: 2,
-      borderBottomColor: '#009333',
+      borderBottomColor: '#008541',
       marginBottom: 10,
       color: 'black',
       alignSelf: 'flex-start',
@@ -59,7 +59,7 @@ export const styles = StyleSheet.create({
     cameraContainer: {
       flex: 1,
       justifyContent: 'center',
-      backgroundColor: '#009333', // Dimmed background
+      backgroundColor: '#008541', // Dimmed background
     },
     cameraPreview: {
       width: ScreenWidth,
@@ -72,7 +72,7 @@ export const styles = StyleSheet.create({
       justifyContent: 'space-between',
       alignItems: 'center',
       padding: 10,
-      backgroundColor: '#009333',
+      backgroundColor: '#008541',
       width: ScreenWidth,
       zIndex: 1,
       marginTop: ScreenHeight*0.05,
@@ -101,7 +101,7 @@ export const styles = StyleSheet.create({
       justifyContent: 'center',
       alignItems: 'center',
       borderWidth: 3,
-      borderColor: '#009333',
+      borderColor: '#008541',
       borderRadius: 20,
     },
   });

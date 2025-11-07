@@ -1,25 +1,35 @@
 import { scaleFont } from '@/constants/ScaleFont'; // Assuming this utility is available
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useRef, useState } from 'react';
-import { BackHandler, Dimensions, FlatList, Image, Text, TouchableHighlight, View } from 'react-native';
+import { BackHandler, Dimensions, FlatList, Image, Text, TouchableHighlight, TouchableOpacity, View } from 'react-native';
 import { styles } from './style'; // Assuming styles are defined here
 
 // --- Page Data Definition ---
 const PAGES = [
   {
-    imageSource: require('../../assets/images/Capture.png'),
-    title: 'Effortless GST Invoicing',
-    subtitle: 'Streamline your invoicing process with our user-friendly GST billing app. Say goodbye to manual calculations and paperwork.',
+    imageSource: require('../../assets/images/GstBilling.png'),
+    title: 'GST Billing Software',
+    subtitle: 'Create GST-compliant invoices instantly and track tax reports effortlessly. Simplify billing and boost financial accuracy.',
   },
   {
-    imageSource: require('../../assets/images/Capture2.png'),
-    title: 'Stay Compliant, Stay Confident',
-    subtitle: 'Ensure GST compliance effortlessly with our intuitive app. Generate accurate invoices and reports, and stay ahead of regulatory changes',
+    imageSource: require('../../assets/images/HR.png'),
+    title: 'HR Management System',
+    subtitle: 'Handle payroll, attendance, and employee data with ease. Automate HR tasks and focus on your people.',
   },
   {
-    imageSource: require('../../assets/images/Capture3.png'),
-    title: 'Boost Productivity, Minimize Errors',
-    subtitle: 'Maximize efficiency in your business operations with our GST billing solution. Reduce errors, save time, and focus on growth.',
+    imageSource: require('../../assets/images/WareHouse.png'),
+    title: 'Warehouse Management',
+    subtitle: 'Track inventory, stock movement, and shipments in real time. Improve accuracy and warehouse efficiency.',
+  },
+  {
+    imageSource: require('../../assets/images/ERP.png'),
+    title: 'Customised ERP Solutions',
+    subtitle: 'Get ERP software built around your business. Flexible, scalable, and fully integrated for smooth operations.',
+  },
+  {
+    imageSource: require('../../assets/images/SchoolManagement.png'),
+    title: 'School Management ',
+    subtitle: 'Manage attendance, grades, and communication — all in one platform. Smart tools for schools that simplify daily tasks.',
   },
 ];
 
@@ -64,17 +74,21 @@ export default function WelcomeScreen() {
   const DotComponent = ({ index }: { index: number }) => {
     const selected = index === currentPageIndex;
     return (
-      <TouchableHighlight underlayColor={'transparent'} onPress={() => { setCurrentPageIndex(index); flatListRef.current?.scrollToIndex({ index, animated: true }); }}
+      <TouchableHighlight
+        underlayColor={'transparent'}
+        onPress={() => {
+          setCurrentPageIndex(index);
+          flatListRef.current?.scrollToIndex({ index, animated: true });
+        }}
         key={index}
-        style={[
-          styles.dotcomponent, // Assuming styles.dotcomponent exists
-          selected && { paddingHorizontal: 4, paddingVertical: 1, backgroundColor: '#009333' },
-        ]}>
+        style={styles.dotcomponent}
+      >
         <View
           style={[
-            styles.dotsub, // Assuming styles.dotsub exists
-            selected ? { backgroundColor: '#009333', borderRadius: 5 } : '',
-          ]}></View>
+            styles.dotsub,
+            selected ? { backgroundColor: '#008541' } : {},
+          ]}
+        />
       </TouchableHighlight>
     );
   };
@@ -82,13 +96,13 @@ export default function WelcomeScreen() {
   // Customized DONE/START button
   const DoneButtonComponent = () => {
     return (
-      <View style={{ width: 100, padding: 8, alignItems: 'center' }}>
+      <View style={{ width: '100%' }}>
         <TouchableHighlight
-          style={{ backgroundColor: '#009333', borderRadius: 10, padding: 6 }}
-          underlayColor={'transparent'}
+          style={styles.nextbtn}
+          underlayColor={'#007a2a'}
           onPress={handleStart}
         >
-          <Text style={{ color: '#fff', fontSize: scaleFont(17), fontWeight: 400 }}>START</Text>
+          <Text style={styles.nextbtntxt}>Get Started</Text>
         </TouchableHighlight>
       </View>
     );
@@ -97,13 +111,13 @@ export default function WelcomeScreen() {
   // Customized NEXT button
   const NextButtonComponent = () => {
     return (
-      <View style={{ width: 100, padding: 8, alignItems: 'center' }}>
+      <View style={{ width: '100%' }}>
         <TouchableHighlight
-          style={{ backgroundColor: '#009333', borderRadius: 10, padding: 6 }}
-          underlayColor={'transparent'}
+          style={styles.nextbtn}
+          underlayColor={'#007a2a'}
           onPress={handleNext}
         >
-          <Text style={{ color: '#fff', fontSize: scaleFont(17), fontWeight: 400 }}>NEXT</Text>
+          <Text style={styles.nextbtntxt}>Next</Text>
         </TouchableHighlight>
       </View>
     );
@@ -116,8 +130,16 @@ export default function WelcomeScreen() {
   return (
     <View style={{ flex: 1, backgroundColor: '#fff' }}>
 
+      {!isLastPage && (
+        <View style={styles.skipBar}>
+          <TouchableOpacity onPress={handleStart}>
+            <Text style={styles.skipText}>Skip</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
       {/* Current Onboarding Content (Swipeable) */}
-      <View style={{ flex: 1, justifyContent: 'center' }}>
+      <View style={{ flex: 1, justifyContent: 'flex-start' }}>
         <FlatList
           ref={flatListRef}
           data={PAGES}
@@ -148,20 +170,16 @@ export default function WelcomeScreen() {
           bottom: 0,
           left: 0,
           right: 0,
-          flexDirection: 'row',
-          justifyContent: 'space-between',
+          flexDirection: 'column',
+          justifyContent: 'flex-end',
           alignItems: 'center',
           paddingHorizontal: 20,
           paddingVertical: 10,
-          height: ScreenHeight * 0.1,
           marginBottom: 10,
         }}
       >
-
-        <View style={{ width: 100 }} />
-
         {/* Dots Indicator */}
-        <View style={{ flexDirection: 'row', justifyContent: 'center', flex: 1 }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginBottom: 30 }}>
           {PAGES.map((_, index) => (
             <DotComponent key={index} index={index} />
           ))}

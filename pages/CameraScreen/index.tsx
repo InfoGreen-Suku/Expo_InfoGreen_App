@@ -3,18 +3,18 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import React, { useEffect, useRef, useState } from 'react';
 import {
-  ActivityIndicator,
-  Alert,
-  BackHandler,
-  Image,
-  Linking,
-  Modal,
-  PermissionsAndroid,
-  Platform,
-  Text,
-  TouchableHighlight,
-  TouchableOpacity,
-  View
+    ActivityIndicator,
+    Alert,
+    BackHandler,
+    Image,
+    Linking,
+    Modal,
+    PermissionsAndroid,
+    Platform,
+    Text,
+    TouchableHighlight,
+    TouchableOpacity,
+    View
 } from 'react-native';
 import RNPhotoManipulator from 'react-native-photo-manipulator';
 
@@ -293,7 +293,7 @@ const CameraScreen = ({ route }: any) => {
 
   return (
     <View style={{ flex: 1 }}>
-      {/* <View style={{ flexDirection: 'row', gap: 40,  backgroundColor: '#009333', width: '100%', height: '7%', }} >
+      {/* <View style={{ flexDirection: 'row', gap: 40,  backgroundColor: '#008541', width: '100%', height: '7%', }} >
         <AntDesign name="close" size={scaleFont(25)} color="#fff" style={{ alignSelf: 'center', left: scaleFont(20), top: scaleFont(10), marginBottom: scaleFont(15) }}
           onPress={()=>navigation.goBack()} />
         <Text style={{ fontSize: scaleFont(20), textAlign: 'center', fontWeight: '500', color: "#fff", top: 12 }}>Camera Preview</Text>
@@ -362,7 +362,7 @@ const CameraScreen = ({ route }: any) => {
               style={styles.button}
               onPress={saveImageWithWatermark}>
               <AntDesign name="check" size={scaleFont(35)}
-                color={'#009333'}
+                color={'#008541'}
                 style={{ alignSelf: 'center', padding: 6 }} />
 
               <Text style={styles.buttonText}>Upload</Text>
@@ -410,7 +410,7 @@ const CameraScreen = ({ route }: any) => {
             </Text>
             <TouchableHighlight
               style={{
-                backgroundColor: '#009333',
+                backgroundColor: '#008541',
                 width: 80,
                 marginTop: 30,
               }}

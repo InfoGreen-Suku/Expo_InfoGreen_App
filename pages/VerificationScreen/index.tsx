@@ -1,8 +1,8 @@
-import React from 'react';
-import {useNavigation} from '@react-navigation/native';
-import {View, Text, Image, TouchableOpacity, BackHandler} from 'react-native';
-import axios from 'axios';
 import AntDesign from '@expo/vector-icons/AntDesign';
+import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
+import React from 'react';
+import { BackHandler, Image, Text, TouchableOpacity, View } from 'react-native';
 import { styles } from './style';
 
 const VerificationScreen = ({route}:any) => {
@@ -43,7 +43,7 @@ const VerificationScreen = ({route}:any) => {
 
   // for bolding the particular word
   const B = (props:any) => (
-    <Text style={{fontWeight: 'bold', color: '#009333'}}>{props.children}</Text>
+    <Text style={{fontWeight: 'bold', color: '#008541'}}>{props.children}</Text>
   );
   const B1 = (props:any) => (
     <Text style={{fontWeight: 'bold', color: 'red'}}>{props.children}</Text>
@@ -81,8 +81,8 @@ const VerificationScreen = ({route}:any) => {
         </TouchableOpacity>
         <TouchableOpacity onPress={() => handleRedirection('Yes')}
           style={styles.YesBtn}>
-          {/* <TickIcon name="check" color={'#009333'} size={20} /> */}
-          <AntDesign name="check" size={20} color="#009333" />
+          {/* <TickIcon name="check" color={'#008541'} size={20} /> */}
+          <AntDesign name="check" size={20} color="#008541" />
           <Text style={styles.YesBtnText}>Yes, it's me</Text>
         </TouchableOpacity>
       </View>

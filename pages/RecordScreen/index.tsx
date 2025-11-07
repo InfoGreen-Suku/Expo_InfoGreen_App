@@ -9,15 +9,15 @@ import { RecordingPresets, useAudioPlayer, useAudioPlayerStatus, useAudioRecorde
 import { Directory, File, Paths } from 'expo-file-system';
 import React, { useEffect, useState } from 'react';
 import {
-  ActivityIndicator,
-  Alert,
-  BackHandler,
-  Dimensions,
-  Modal,
-  PermissionsAndroid,
-  Text,
-  TouchableHighlight,
-  View
+    ActivityIndicator,
+    Alert,
+    BackHandler,
+    Dimensions,
+    Modal,
+    PermissionsAndroid,
+    Text,
+    TouchableHighlight,
+    View
 } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { styles } from './style';
@@ -325,7 +325,7 @@ export default function Record({ route }: any) {
                     </TouchableHighlight>
                     <TouchableHighlight
                       style={{
-                        backgroundColor: '#009333',
+                        backgroundColor: '#008541',
                         width: 100,
                         marginTop: scaleFont(30),
                       }}

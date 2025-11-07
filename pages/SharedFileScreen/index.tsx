@@ -232,7 +232,7 @@ export default function Sharedfile({ route }: any) {
           flexDirection: 'row',
           gap: 50,
           marginBottom: 30,
-          backgroundColor: '#009333',
+          backgroundColor: '#008541',
           width: '100%',
           height: '7%',
         }}>
@@ -253,7 +253,7 @@ export default function Sharedfile({ route }: any) {
       <View style={{ flex: 1, width: '100%', height: '90%', justifyContent: 'center', alignItems: 'center' }}>
         {renderContent()}
       </View>
-      <TouchableOpacity style={{ backgroundColor: '#009333', padding: 8, width: '95%', borderRadius: 10, marginBottom: ScreenHeight * 0.04, alignSelf: 'center' }} onPress={() => { SharedDataPDF(filepath) }}>
+      <TouchableOpacity style={{ backgroundColor: '#008541', padding: 8, width: '95%', borderRadius: 10, marginBottom: ScreenHeight * 0.04, alignSelf: 'center' }} onPress={() => { SharedDataPDF(filepath) }}>
         <Text style={{ color: '#fff', textAlign: 'center', fontSize: scaleFont(17) }}>Submit</Text>
       </TouchableOpacity>
     </View>
