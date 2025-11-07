@@ -4,13 +4,13 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
 import {
-  ActivityIndicator,
-  BackHandler,
-  Image,
-  Modal,
-  Text,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    BackHandler,
+    Image,
+    Modal,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import DeviceInfo from "react-native-device-info";
 import { useDispatch, useSelector } from "react-redux";
@@ -210,7 +210,7 @@ export default function PendingScreen() {
       </TouchableOpacity>
       {/* <Button
           title={'Refresh'}
-          buttonStyle={{backgroundColor: '#009333'}}
+          buttonStyle={{backgroundColor: '#008541'}}
           containerStyle={{width: '50%', marginTop: 20}}
           onPress={handleData}
         /> */}

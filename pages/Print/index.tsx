@@ -199,7 +199,7 @@ export default function Print({ route }: any) {
                     flexDirection: 'row',
                     gap: 50,
                     marginBottom: 30,
-                    backgroundColor: '#009333',
+                    backgroundColor: '#008541',
                     width: '100%',
                     height: '7%',
                 }}>
@@ -247,7 +247,7 @@ export default function Print({ route }: any) {
                     marginBottom: 50,
                     top: 20,
                     width: 160,
-                    backgroundColor: '#009333',
+                    backgroundColor: '#008541',
                     borderRadius: 20,
                     justifyContent: 'center',
                     padding: 10,
@@ -282,8 +282,8 @@ export default function Print({ route }: any) {
                                 style={{
                                     flexDirection: 'row',
                                     gap: 10,
-                                    borderColor: '#009333',
-                                    backgroundColor: '#009333',
+                                    borderColor: '#008541',
+                                    backgroundColor: '#008541',
                                     padding: 15,
                                     borderRadius: 8,
                                 }}>
@@ -298,8 +298,8 @@ export default function Print({ route }: any) {
                                 style={{
                                     flexDirection: 'row',
                                     gap: 10,
-                                    borderColor: '#009333',
-                                    backgroundColor: '#009333',
+                                    borderColor: '#008541',
+                                    backgroundColor: '#008541',
                                     padding: 15,
                                     borderRadius: 8,
                                 }}>

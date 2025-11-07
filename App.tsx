@@ -86,7 +86,9 @@ function Root() {
     });
   }, []);
 
- 
+ useEffect(() => {
+  console.log("userData in app.tsx",userData);
+ }, [userData]);
   const navigateToScreen = (
     screenName: any,
     userId: any,
@@ -111,9 +113,9 @@ function Root() {
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <View style={{ flex: 1 }}>
         <StatusBar style="light" />
-        <View style={{ height: insets.top, backgroundColor: '#009333' }} />
+        <View style={{ height: insets.top, backgroundColor: '#008541' }} />
         <NavigationContainer>
-          {userData === null ? <AuthStackNavigator /> : <MainNavigator />}
+          {userData === null || userData === undefined ? <AuthStackNavigator /> : <MainNavigator />}
         </NavigationContainer>
         <View style={{ height: insets.bottom }} />
       </View>

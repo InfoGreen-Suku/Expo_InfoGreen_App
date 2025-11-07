@@ -77,7 +77,7 @@ export const styles = StyleSheet.create({
   },
 
   TextContainer: {
-    backgroundColor: "#009333",
+    backgroundColor: "#008541",
     width: ScreenWidth,
     height: ScreenHeight,
   },

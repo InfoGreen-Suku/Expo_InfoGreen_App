@@ -355,7 +355,7 @@ const taskConfig = {
     type: "drawable",
     package: "com.igcloudbook.app",
   },
-  color: "#009333",
+  color: "#008541",
   parameters: {
     delay: 30000,
   },

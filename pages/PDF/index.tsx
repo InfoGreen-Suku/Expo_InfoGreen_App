@@ -67,7 +67,7 @@ export default function PDF({ route }: any) {
     return (
         <View style={styles.container}>
 
-            <View style={{ flexDirection: 'row', gap: 50, marginBottom: 30, backgroundColor: '#009333', width: '100%', height: '7%', }} >
+            <View style={{ flexDirection: 'row', gap: 50, marginBottom: 30, backgroundColor: '#008541', width: '100%', height: '7%', }} >
                 <AntDesign name="close" size={scaleFont(25)} color="#fff" style={{ alignSelf: 'center', left: scaleFont(20), top: scaleFont(10), marginBottom: scaleFont(15) }}
                     onPress={close} />
                 <Text style={{ fontSize: scaleFont(20), textAlign: 'center', fontWeight: '500', color: "#fff", top: 12 }}>Preview</Text>
@@ -81,7 +81,7 @@ export default function PDF({ route }: any) {
 
                 style={styles.pdf}
             />
-            <View style={{ flexDirection: 'row', gap: 50, marginBottom: 50, top: 20, width: 200, backgroundColor: "#009333", borderRadius: 20, justifyContent: 'center', padding: 10, alignSelf: 'center' }} >
+            <View style={{ flexDirection: 'row', gap: 50, marginBottom: 50, top: 20, width: 200, backgroundColor: "#008541", borderRadius: 20, justifyContent: 'center', padding: 10, alignSelf: 'center' }} >
                 <AntDesign name="printer" size={30} color="#fff" style={{ alignSelf: 'center' }}
                     onPress={Print} />
 

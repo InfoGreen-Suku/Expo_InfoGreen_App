@@ -16,7 +16,7 @@ export const styles = StyleSheet.create({
     gap: 40,
   },
   btn: {
-    backgroundColor: "#009333",
+    backgroundColor: "#008541",
     width: 180,
     padding: 6,
     justifyContent: "center",
